@@ -49,3 +49,7 @@ line {
     fill: white;
     stroke: #333;
 }
+
+.copy {
+    opacity: 0.6;
+}

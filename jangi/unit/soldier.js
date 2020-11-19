@@ -1,185 +1,192 @@
 import {
-    makePolygonPath,
-    createText,
-    getClientCoord,
-    getArrayCoord,
-    isRightCoord,
-    setUnitLocation,
-    isWall
+    isWall,
+    createSvg,
+    emitChange
 } from '../helper/index.js'
 
+import Coord from '../helper/coord.js'
+import Drawer from '../helper/drawer.js';
+
 export default class Soldier {
-    constructor(data = [], team = '', y, x) {
+    constructor(data = [], team = '', y, x, copy=false) {
+        const id = `soldier${x}${y}`;
+        this.name = '쫄';
         this.data = data
-        this.y = y;
-        this.x = x;
+        this.copy = copy;
         this.team = team;
+        this.id = this.copy ? id.concat('copy') : id;
+        this.coord = new Coord(x, y);
+        this.drawer = new Drawer(team, this.name);
     }
 
     draw(parent) {
         this.parent = parent;
-        const [coordX, coordY, ratio] = getClientCoord(parent, this.x, this.y);
+        const [coordX, coordY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
 
-        const r = ratio * 0.25;
-        this.r = r;
+        const r = this.coord.getRadius() * 0.25;
+        const g = createSvg('g');
+        const poly = createSvg('polygon');
+        const text = this.drawer.createText(coordX, coordY, this.team, this.name);
+        const points = this.drawer.makePolygonPath(coordX, coordY, r);
 
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        const text = createText(coordX, coordY, this.team, '쫄');
-        const path = makePolygonPath(coordX, coordY, r);
+        poly.setAttributeNS(null, 'points', points);
+        poly.setAttributeNS(null, 'class', 'unit');
+        g.append(poly, text);
+        g.setAttributeNS(null, 'id', this.id);
 
-        poly.setAttributeNS(null, 'points', path);
-        g.append(poly);
-        g.append(text);
-        this.id = `sol${this.x}${this.y}`;
-        g.setAttribute('id', this.id)
+        if (this.copy) {
+            g.setAttributeNS(null, 'class', 'copy');
+        }
 
         this.g = g;
         this.poly = poly;
         this.text = text;
-        if (this.data.length > 0) {
-            this.moveEvent(g);
+        this.r = r;
+
+        if (!this.copy) {
+            this.bindEvent(g);
         }
-        
-        poly.classList.add('unit');
+
         parent.append(g);
     }
 
-    moveEvent(dom) {
+    bindEvent() {
         let canMove = false;
         let possibleRoute;
         let moveUnit;
         let possibleRouteDom;
-        const mover = (e) => {
-            if (!moveUnit) {
-                moveUnit = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-                this.moveUnit = moveUnit;
-                moveUnit.setAttribute('href', '#' + this.id);
-                this.parent.append(moveUnit);
-            }
-            if (canMove) {
+
+        const handleMouseMove = (e) => {
+            if (!canMove) {
                 return;
             }
-            setUnitLocation(this.poly, this.text, e.offsetX, e.offsetY, this.r);
-        };
 
-        const remover = (e) => {
-            const [x, y] = this.changeArrayCoord(e.offsetX, e.offsetY);
-            let cx, cy;
+            if (!moveUnit) {
+                moveUnit = createSvg('use');
+                moveUnit.setAttributeNS(null, 'href', '#' + this.id);
 
-            if (possibleRoute.includes(`${x},${y}`)) {
-                [cx, cy] = getClientCoord(this.parent, x, y);
-                const event = new CustomEvent('unitmove', {
-                    detail: {
-                        from: {
-                            x: this.x,
-                            y: this.y
-                        },
-                        to: { x, y }
-                    }
-                });
-
-                this.parent.dispatchEvent(event);
-                this.setCoord(x, y);
-            } else {
-                [cx, cy] = getClientCoord(this.parent, this.x, this.y);
+                this.moveUnit = moveUnit;
+                this.parent.append(moveUnit);
             }
 
-            setUnitLocation(this.poly, this.text, cx, cy, this.r);
+            this.drawer.setUnitLocation(this.poly, this.text, e.offsetX, e.offsetY, this.r);
+        };
 
-            canMove = true;
-            // Todo Remove possibleRoute svg group
-            possibleRouteDom.forEach(s => {s.g.remove()});
+        const handleEndClick = (e) => {
+            const [movedX, movedY] = this.coord.getArrayCoord(e.offsetX, e.offsetY);
+
+            let clientX, clientY;
+            if (possibleRoute.includes(`${movedX},${movedY}`) && !this.coord.isSameCoord(movedX, movedY)) {
+                [clientX, clientY] = this.coord.getClientCoord(movedX, movedY);
+                const from = {
+                    x: this.coord.x,
+                    y: this.coord.y
+                };
+
+                const to = {
+                    x: movedX,
+                    y: movedY
+                };
+                emitChange(from, to);
+                this.coord.setCoord(movedX, movedY);
+            } else {
+                [clientX, clientY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
+            }
+
+            possibleRouteDom.forEach(solider => {
+                solider.remove();
+            })
+        
+            canMove = false;
             possibleRouteDom = null;
             possibleRoute = null;
+            moveUnit.remove();
+            moveUnit = null;
 
-            dom.removeEventListener('mousemove', mover);
-            dom.removeEventListener('click', remover);
+            this.drawer.setUnitLocation(this.poly, this.text, clientX, clientY, this.r);
+
+            this.g.removeEventListener('mousemove', handleMouseMove);
         };
 
         const startClick = (e) => {
-            canMove = false;
+            if (!canMove) {
+                const getIntCoord = coord => coord.split(',').map(v => parseInt(v));
 
-            possibleRoute = this.possibleRoute();
-            possibleRouteDom = possibleRoute
-            .filter(coord => {
-                const [x, y] = coord.split(',').map(v => parseInt(v));
-                return !(x === this.x && y === this.y)
-            }).map(coord => {
-                const [x, y] = coord.split(',').map(v => parseInt(v))
-                const s = new Soldier([], this.team, y, x);
-                s.draw(this.parent);
-                return s;
-            });
+                possibleRoute = this.possibleRoute();
+                console.log(this.data, possibleRoute);
+                possibleRouteDom = possibleRoute
+                .filter(coord => {
+                    const [x, y] = getIntCoord(coord);
+                    return !this.coord.isSameCoord(x, y);
+                }).map(coord => {
+                    const [x, y] = getIntCoord(coord);
+                    const soldier = new Soldier([], this.team, y, x, true);
+                    soldier.draw(this.parent);
+                    return soldier
+                });
 
-            dom.addEventListener('mousemove', mover);
-            dom.addEventListener('click', remover);
+                this.g.addEventListener('mousemove', handleMouseMove);
+                canMove = true;
+            } else {
+                handleEndClick(e);
+            }
         };
 
-        dom.addEventListener('click', startClick);
-    }
-
-    changeArrayCoord(x, y) {
-        let [dx, dy] = getArrayCoord(this.parent, x, y);
-
-        if (isRightCoord(dx, dy)) {
-            dx = Math.round(dx);
-            dy = Math.round(dy);
-            return [dx, dy]
-        } else {
-            return [this.x, this.y]
-        }
+        this.g.addEventListener('click', startClick);
     }
 
     possibleRoute() {
-        let dx = [-1, 0, 1];
-        let dy = [0, 1, 0];
-
-        if (this.team === 'han' && this.x === 3 && this.y === 7) {
-            dx.push(1);
-            dy.push(-1);
-        } else if (this.team === 'han' && this.x === 5 && this.y === 7) {
-            dx.push(-1);
-            dy.push(-1);
-        } else if (this.team === 'han' && this.x === 4 && this.y === 8) {
-            dx.push(-1);
-            dx.push(1);
-            dy.push(-1)
-            dy.push(-1)
-        }
-
-        const arr = [`${this.x},${this.y}`];
-        if (this.team === 'cho') {
-            dy = [0, -1, 0];
-            if (this.x === 3 && this.y === 2) {
-                dx.push(1);
-                dy.push(-1);
-            } else if (this.x === 5 && this.y === 2) {
-                dx.push(-1);
-                dy.push(-1);
-            } else if (this.x === 4 && this.y === 1) {
-                dx.push(-1);
-                dx.push(1);
-                dy.push(-1)
-                dy.push(-1)
-            }
-        };
+        const routeArray = [`${this.coord.x},${this.coord.y}`];
+        const [dx, dy] = this.moveableDirection();
 
         for (let i=0; i<dx.length; i++) {
-            const cx = this.x + dx[i];
-            const cy = this.y + dy[i];
-            if (isWall(cx,cy)) {
-                if (this.data[cy][cx] === 0 || this.data[cy][cx].team !== this.team) {
-                    arr.push(`${cx},${cy}`);
+            const movedX = this.coord.x + dx[i];
+            const movedY = this.coord.y + dy[i];
+            
+            if (isWall(movedX, movedY)) {
+                console.log(this.data[movedY][movedX]);
+                if (this.data[movedY][movedX] === 0 || this.data[movedY][movedX].team !== this.team) {
+                    routeArray.push(`${movedX},${movedY}`);
                 }
             }
         }
-        return arr
+        return routeArray
     }
 
-    setCoord(x, y) {
-        this.x = x;
-        this.y = y;
+    moveableDirection() {
+        let xDirections = [-1, 0, 1];
+        let yDirections = [0, 1, 0];
+
+        if (this.team === 'han' && this.x === 3 && this.y === 7) {
+            xDirections.push(1);
+            yDirections.push(-1);
+        } else if (this.team === 'han' && this.x === 5 && this.y === 7) {
+            xDirections.push(-1);
+            yDirections.push(-1);
+        } else if (this.team === 'han' && this.x === 4 && this.y === 8) {
+            xDirections.push(-1);
+            xDirections.push(1);
+            yDirections.push(-1)
+            yDirections.push(-1)
+        }
+
+        if (this.team === 'cho') {
+            yDirections = [0, -1, 0];
+            if (this.x === 3 && this.y === 2) {
+                xDirections.push(1);
+                yDirections.push(-1);
+            } else if (this.x === 5 && this.y === 2) {
+                xDirections.push(-1);
+                yDirections.push(-1);
+            } else if (this.x === 4 && this.y === 1) {
+                xDirections.push(-1);
+                xDirections.push(1);
+                yDirections.push(-1)
+                yDirections.push(-1)
+            }
+        };
+
+        return [xDirections, yDirections];
     }
 
     remove() {

@@ -1,9 +1,8 @@
+import { getInstance } from './helper/index.js';
 import { Line } from './line.js';
 
 export class Board {
-    constructor(data) {
-        this.totalData = data;
-        this.data = data.data
+    constructor() {
         this.dom = document.createElement('div');
         this.innerDom = document.createElement('div');
         this.dom.classList.add('board');
@@ -12,30 +11,44 @@ export class Board {
         this.y = 10;
     }
 
+    setData(data) {
+        this.totalData = data;
+        this.data = data.data
+    }
+
     render(parent) {
         this.dom.append(this.innerDom);
         parent.appendChild(this.dom);
+        this.width = this.innerDom.clientWidth;
+        this.height = this.innerDom.clientHeight;
         this.draw();
         this.listenUnitChange();
     }
 
     draw() {
-        const WIDTH = this.innerDom.clientWidth;
-        const HEIGHT = this.innerDom.clientHeight;
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
+        svg.setAttributeNS(null, 'id', 'board');
+        svg.setAttributeNS(null, 'width', this.width);
+        svg.setAttributeNS(null, 'height', this.height);
+        this.svg = svg;
+        this.innerDom.append(svg);
+
+        this.drawLine();
+        this.drawGameData();
+    }
+
+    drawLine() {
         const VH = document.body.offsetHeight / 100;
 
         const X_PADDING = 3.6 * VH;
         const Y_PADDING = 4.8 * VH;
 
-        const INNER_WIDTH = WIDTH - 2 * X_PADDING;
-        const INNER_HEIGHT = HEIGHT - 2 * Y_PADDING;
+        const INNER_WIDTH = this.width - 2 * X_PADDING;
+        const INNER_HEIGHT = this.height - 2 * Y_PADDING;
 
         const X_WIDTH = INNER_WIDTH / (this.x -1);
         const Y_HEIGHT = INNER_HEIGHT / (this.y -1);
-
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        this.svg = svg;
 
         const addPadding = (coord) => {
             for (let d in coord) {
@@ -47,11 +60,7 @@ export class Board {
             }
             return coord;
         }
-        this.svg = svg;
-
-        svg.setAttributeNS(null, 'width', WIDTH);
-        svg.setAttributeNS(null, 'height', HEIGHT);
-
+        
         for (let i=0; i<this.x; i++) {
             const lineCoord = addPadding({
                 x1: X_WIDTH * i,
@@ -60,7 +69,7 @@ export class Board {
                 y2: INNER_HEIGHT 
             });
 
-            this.drawLine(lineCoord, 'y');
+            this.createLine(lineCoord, 'y');
 
             if (i === 3) {
                 const crossLineCoord = addPadding({
@@ -77,8 +86,8 @@ export class Board {
                     y2: INNER_HEIGHT
                 });
 
-                this.drawLine(crossLineCoord, 'y');
-                this.drawLine(crossLineCoord2, 'y');
+                this.createLine(crossLineCoord, 'y');
+                this.createLine(crossLineCoord2, 'y');
 
             } else if (i === 5) {
                 const crossLineCoord = addPadding({
@@ -95,8 +104,8 @@ export class Board {
                     y2: INNER_HEIGHT
                 });
 
-                this.drawLine(crossLineCoord, 'y');
-                this.drawLine(crossLineCoord2, 'y');
+                this.createLine(crossLineCoord, 'y');
+                this.createLine(crossLineCoord2, 'y');
             }
         }
 
@@ -108,14 +117,11 @@ export class Board {
                 y2: Y_HEIGHT * j
             });
 
-            this.drawLine(lineCoord, 'x');
+            this.createLine(lineCoord, 'x');
         }
-
-        this.drawGameData();
-        this.innerDom.append(svg);
     }
 
-    drawLine(coord, className) {
+    createLine(coord, className) {
         const line = new Line(coord, className);
         line.draw(this.svg)
     }
@@ -124,7 +130,10 @@ export class Board {
         for (let y=0; y<this.y; y++) {
             for (let x =0; x<this.x; x++) {
                 if (this.data[y][x] !== 0) {
-                    this.data[y][x].draw(this.svg);
+                    const data = this.data[y][x];
+                    const s = getInstance(data);
+                    data.instance = s;
+                    s.draw(this.svg);
                 }
             }
         }

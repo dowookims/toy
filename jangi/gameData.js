@@ -1,4 +1,4 @@
-import { Soldier, Scholar, King, Horse, Elephant, Chariot, Cannon } from './unit/index.js'
+// import { Soldier, Scholar, King, Horse, Elephant, Chariot, Cannon } from './unit/index.js'
 
 export class GameData {
     constructor() {
@@ -25,12 +25,13 @@ export class GameData {
             for (let j = 0; j < 2; j++) {
                 const y = j === 0 ? 6 : 3;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Soldier(this.data, team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Soldier(this.data, team, y, x);
-                } else {
-                    this.choData[y][x] = new Soldier(this.data, team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '쫄'
+                };
             }
         }
     }
@@ -41,12 +42,13 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 9 : 0;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Scholar(this.data, team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Scholar(this.data, team, y, x);
-                } else {
-                    this.choData[y][x] = new Scholar(this.data, team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '사'
+                };
             }
         }
     }
@@ -57,12 +59,13 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 8 : 1;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new King(this.data, team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new King(this.data, team, y, x);
-                } else {
-                    this.choData[y][x] = new King(this.data, team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '왕'
+                };
             }
         }
     }
@@ -73,12 +76,13 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 9 : 0;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Horse(team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Horse(team, y, x);
-                } else {
-                    this.choData[y][x] = new Horse(team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '마'
+                };
             }
         }
     }
@@ -89,12 +93,13 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 9 : 0;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Elephant(team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Elephant(team, y, x);
-                } else {
-                    this.choData[y][x] = new Elephant(team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '상'
+                };
             }
         }
     }
@@ -105,12 +110,13 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 9 : 0;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Chariot(team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Chariot(team, y, x);
-                } else {
-                    this.choData[y][x] = new Chariot(team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '차'
+                };
             }
         }
     }
@@ -121,25 +127,26 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 7 : 2;
                 const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = new Cannon(team, y, x);
-                if (team === 'han') {
-                    this.hanData[y][x] = new Cannon(team, y, x);
-                } else {
-                    this.choData[y][x] = new Cannon(team, y, x);
-                }
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name: '포'
+                };
             }
         }
     }
 
-    listenUnitChange() {
+    // listenUnitChange() {
 
-    }
+    // }
 
     changeData(from, to) {
         const fromData = this.data[from.y][Math.abs(from.x)];
         const toData = this.data[to.y][Math.abs(to.x)];
         if (toData !== 0 && fromData.team !== toData.team) {
-            toData.remove();
+            toData.instance.remove();
         }
         
         this.data[to.y][to.x] = fromData;
