@@ -1,139 +1,21 @@
-import {
-    isWall,
-    createSvg,
-    emitChange
-} from '../helper/index.js'
+import { isWall } from '../helper/index.js'
 
-import Coord from '../helper/coord.js'
-import Drawer from '../helper/drawer.js';
+import Unit from './unit.js';
 
-export default class Chariot {
-    constructor(data = [], team = '', y, x, copy=false) {
+export default class Chariot extends Unit{
+    constructor({data, team , y, x, name}, radius, copy=false) {
+        super({data, team , y, x, name}, radius, copy);
+
         const id = `chariot${x}${y}`;
-        this.name = '차';
-        this.data = data
-        this.copy = copy;
-        this.team = team;
         this.id = this.copy ? id.concat('copy') : id;
-        this.coord = new Coord(x, y);
-        this.drawer = new Drawer(team, this.name);
     }
 
     draw(parent) {
-        this.parent = parent;
-        const [coordX, coordY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
-
-        const r = this.coord.getRadius() * 0.35;
-        const g = createSvg('g');
-        const poly = createSvg('polygon');
-        const text = this.drawer.createText(coordX, coordY, this.team, this.name);
-        const points = this.drawer.makePolygonPath(coordX, coordY, r);
-
-        poly.setAttributeNS(null, 'points', points);
-        poly.setAttributeNS(null, 'class', 'unit');
-        g.append(poly, text);
-        g.setAttributeNS(null, 'id', this.id);
-
-        if (this.copy) {
-            g.setAttributeNS(null, 'class', 'copy');
-        }
-
-        this.g = g;
-        this.poly = poly;
-        this.text = text;
-        this.r = r;
-
-        if (!this.copy) {
-            this.bindEvent(g);
-        }
-
-        parent.append(g);
+        super.draw(parent);
     }
 
     bindEvent() {
-        let canMove = false;
-        let possibleRoute;
-        let moveUnit;
-        let possibleRouteDom;
-
-        const handleMouseMove = (e) => {
-            if (!canMove) {
-                return;
-            }
-
-            if (!moveUnit) {
-                moveUnit = createSvg('use');
-                moveUnit.setAttributeNS(null, 'href', '#' + this.id);
-
-                this.moveUnit = moveUnit;
-                this.parent.append(moveUnit);
-            }
-
-            this.drawer.setUnitLocation(this.poly, this.text, e.offsetX, e.offsetY, this.r);
-        };
-
-        const handleEndClick = (e) => {
-            const [movedX, movedY] = this.coord.getArrayCoord(e.offsetX, e.offsetY);
-
-            let clientX, clientY;
-            if (possibleRoute.includes(`${movedX},${movedY}`) && !this.coord.isSameCoord(movedX, movedY)) {
-                [clientX, clientY] = this.coord.getClientCoord(movedX, movedY);
-                const from = {
-                    x: this.coord.x,
-                    y: this.coord.y
-                };
-
-                const to = {
-                    x: movedX,
-                    y: movedY
-                };
-                emitChange(from, to);
-                this.coord.setCoord(movedX, movedY);
-            } else {
-                [clientX, clientY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
-            }
-
-            possibleRouteDom.forEach(solider => {
-                solider.remove();
-            })
-        
-            canMove = false;
-            possibleRouteDom = null;
-            possibleRoute = null;
-            if (moveUnit) {
-                moveUnit.remove();
-            }
-            moveUnit = null;
-
-            this.drawer.setUnitLocation(this.poly, this.text, clientX, clientY, this.r);
-
-            this.g.removeEventListener('mousemove', handleMouseMove);
-        };
-
-        const startClick = (e) => {
-            if (!canMove) {
-                const getIntCoord = coord => coord.split(',').map(v => parseInt(v));
-
-                possibleRoute = this.possibleRoute();
-                possibleRouteDom = possibleRoute
-                .filter(coord => {
-                    const [x, y] = getIntCoord(coord);
-                    return !this.coord.isSameCoord(x, y);
-                }).map(coord => {
-                    const [x, y] = getIntCoord(coord);
-                    const chariot = new Chariot([], this.team, y, x, true);
-                    chariot.draw(this.parent);
-                    return chariot
-                });
-
-                this.g.addEventListener('mousemove', handleMouseMove);
-                canMove = true;
-            } else {
-                handleEndClick(e);
-            }
-        };
-
-        this.g.addEventListener('click', startClick);
+        super.bindEvent();
     }
 
     possibleRoute() {
@@ -244,9 +126,6 @@ export default class Chariot {
     }
 
     remove() {
-        this.g.remove();
-        if (this.moveUnit) {
-            this.moveUnit.remove();
-        }
+        super.remove();
     }
 }

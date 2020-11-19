@@ -19,6 +19,39 @@ export class GameData {
         this.setCannon();
     }
 
+    iterateFirstLine(x1, x2, name) {
+        for (let i=0; i<2; i++) {
+            const x = i === 0 ? x1 : x2;
+            for (let j=0; j<2; j++) {
+                const y = j === 0 ? 9 : 0;
+                const team = j === 0 ? 'cho' : 'han';
+                this.data[y][x] = {
+                    data: this.data,
+                    team,
+                    y,
+                    x,
+                    name
+                };
+            }
+        }
+    }
+
+    setChariot() {
+        this.iterateFirstLine(0, 8, '차');
+    }
+
+    setHorse() {
+        this.iterateFirstLine(1, 7, '마');
+    }
+
+    setElephant() {
+        this.iterateFirstLine(2, 6, '상');
+    }
+
+    setScholar() {
+        this.iterateFirstLine(3, 5, '사');
+    }
+
     setSoldier() {
         for (let i = 0; i < 5; i++) {
             const x = i * 2;
@@ -31,23 +64,6 @@ export class GameData {
                     y,
                     x,
                     name: '쫄'
-                };
-            }
-        }
-    }
-
-    setScholar() {
-        for (let i=0; i<2; i++) {
-            const x = i === 0 ? 3 : 5;
-            for (let j=0; j<2; j++) {
-                const y = j === 0 ? 9 : 0;
-                const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = {
-                    data: this.data,
-                    team,
-                    y,
-                    x,
-                    name: '사'
                 };
             }
         }
@@ -70,57 +86,6 @@ export class GameData {
         }
     }
 
-    setHorse() {
-        for (let i=0; i<2; i++) {
-            const x = i === 0 ? 1 : 7;
-            for (let j=0; j<2; j++) {
-                const y = j === 0 ? 9 : 0;
-                const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = {
-                    data: this.data,
-                    team,
-                    y,
-                    x,
-                    name: '마'
-                };
-            }
-        }
-    }
-
-    setElephant() {
-        for (let i=0; i<2; i++) {
-            const x = i === 0 ? 2 : 6;
-            for (let j=0; j<2; j++) {
-                const y = j === 0 ? 9 : 0;
-                const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = {
-                    data: this.data,
-                    team,
-                    y,
-                    x,
-                    name: '상'
-                };
-            }
-        }
-    }
-
-    setChariot() {
-        for (let i=0; i<2; i++) {
-            const x = i === 0 ? 0 : 8;
-            for (let j=0; j<2; j++) {
-                const y = j === 0 ? 9 : 0;
-                const team = j === 0 ? 'cho' : 'han';
-                this.data[y][x] = {
-                    data: this.data,
-                    team,
-                    y,
-                    x,
-                    name: '차'
-                };
-            }
-        }
-    }
-
     setCannon() {
         for (let i=0; i<2; i++) {
             const x = i === 0 ? 1 : 7;
@@ -138,10 +103,6 @@ export class GameData {
         }
     }
 
-    // listenUnitChange() {
-
-    // }
-
     changeData(from, to) {
         const fromData = this.data[from.y][Math.abs(from.x)];
         const toData = this.data[to.y][Math.abs(to.x)];
@@ -151,5 +112,9 @@ export class GameData {
         
         this.data[to.y][to.x] = fromData;
         this.data[from.y][from.x] = 0;
+    }
+
+    gameover(winner) {
+        this.winner = winner;
     }
 }

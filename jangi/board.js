@@ -22,7 +22,7 @@ export class Board {
         this.width = this.innerDom.clientWidth;
         this.height = this.innerDom.clientHeight;
         this.draw();
-        this.listenUnitChange();
+        this.listenEmitEvent();
     }
 
     draw() {
@@ -139,10 +139,14 @@ export class Board {
         }
     }
 
-    listenUnitChange() {
+    listenEmitEvent() {
         this.svg.addEventListener('unitmove', (e) => {
             const { from, to } = e.detail;
             this.totalData.changeData(from, to);
+        });
+        this.svg.addEventListener('gameover', (e) => {
+            const { winner } = e.detail;
+            this.totalData.gameover(winner);
         })
     }
 }
