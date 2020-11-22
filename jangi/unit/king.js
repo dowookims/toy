@@ -4,7 +4,7 @@ export default class King extends Unit{
     constructor({data, team , y, x, name}, radius, copy=false) {
         super({data, team , y, x, name}, radius, copy);
 
-        const id = 'king';
+        const id = `king${y}${x}`;
         this.id = this.copy ? id.concat('copy') : id;
     }
 

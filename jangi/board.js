@@ -1,5 +1,6 @@
 import { getInstance } from './helper/index.js';
-import { Line } from './line.js';
+import { Line, Score } from './component/index.js';
+import Modal from './component/modal.js';
 
 export class Board {
     constructor() {
@@ -13,7 +14,6 @@ export class Board {
 
     setData(data) {
         this.totalData = data;
-        this.data = data.data
     }
 
     render(parent) {
@@ -22,20 +22,23 @@ export class Board {
         this.width = this.innerDom.clientWidth;
         this.height = this.innerDom.clientHeight;
         this.draw();
+        this.setScoreBoard(parent);
         this.listenEmitEvent();
     }
 
     draw() {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-        svg.setAttributeNS(null, 'id', 'board');
-        svg.setAttributeNS(null, 'width', this.width);
-        svg.setAttributeNS(null, 'height', this.height);
-        this.svg = svg;
-        this.innerDom.append(svg);
+        this.svg.setAttributeNS(null, 'id', 'board');
+        this.svg.setAttributeNS(null, 'width', this.width);
+        this.svg.setAttributeNS(null, 'height', this.height);
 
-        this.drawLine();
-        this.drawGameData();
+        this.innerDom.append(this.svg);
+
+        this.positionModal = new Modal();
+        this.positionModal.render(this.innerDom);
+        // this.drawLine();
+        // this.drawGameData();
     }
 
     drawLine() {
@@ -129,20 +132,35 @@ export class Board {
     drawGameData() {
         for (let y=0; y<this.y; y++) {
             for (let x =0; x<this.x; x++) {
-                if (this.data[y][x] !== 0) {
-                    const data = this.data[y][x];
+                if (this.totalData.data[y][x] !== 0) {
+                    const data = this.totalData.data[y][x];
                     const s = getInstance(data);
                     data.instance = s;
                     s.draw(this.svg);
+                    this.totalData.addTeamData(data.team, s);
                 }
             }
         }
     }
 
+    setScoreBoard(parent) {
+        const totalData = this.totalData;
+        this.score = new Score(totalData.cho.score, totalData.han.score);
+        this.score.draw(parent);
+    }
+
     listenEmitEvent() {
         this.svg.addEventListener('unitmove', (e) => {
             const { from, to } = e.detail;
-            this.totalData.changeData(from, to);
+            const result = this.totalData.changeData(from, to);
+            if (result.length === 2) {
+                const [team, score] = result;
+                this.score.calculateScore(team, score);
+                this.score.changeTurn(team);
+            } else if (result.length === 1) {
+                const [team] = result;
+                this.score.changeTurn(team);
+            }
         });
         this.svg.addEventListener('gameover', (e) => {
             const { winner } = e.detail;

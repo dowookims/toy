@@ -1,18 +1,21 @@
 import {
     createSvg,
-    emitChange
+    emitChange,
+    createText,
+    jang
 } from '../helper/index.js'
 
 import Coord from '../helper/coord.js'
 import Drawer from '../helper/drawer.js';
 
 export default class Unit {
-    constructor({data, team , y, x, name}, radius, copy=false) {
+    constructor({data, team , y, x, name, score}, radius, copy=false) {
         this.data = data
         this.team = team;
         this.name = name;
         this.radius = radius;
         this.copy = copy;
+        this.score = score;
         this.coord = new Coord(x, y);
         this.drawer = new Drawer(team, this.name);
     }
@@ -23,7 +26,7 @@ export default class Unit {
         const r = this.coord.getRadius() * this.radius;
         const g = createSvg('g');
         const poly = createSvg('polygon');
-        const text = this.drawer.createText(coordX, coordY, this.team, this.name);
+        const text = createText(coordX, coordY, this.team, this.name);
         const points = this.drawer.makePolygonPath(coordX, coordY, r);
 
         poly.setAttributeNS(null, 'points', points);
@@ -97,8 +100,12 @@ export default class Unit {
             canMove = false;
             possibleRouteDom = null;
             possibleRoute = null;
-            moveUnit.remove();
+            if (moveUnit) {
+                moveUnit.remove();
+            }
             moveUnit = null;
+
+            if (this.possibleRoute())
 
             this.drawer.setUnitLocation(this.poly, this.text, clientX, clientY, this.r);
 
@@ -106,6 +113,9 @@ export default class Unit {
         };
 
         const startClick = (e) => {
+            if (this.data.turn !== this.team) {
+                return;
+            }
             if (!canMove) {
                 const getIntCoord = coord => coord.split(',').map(v => parseInt(v));
 

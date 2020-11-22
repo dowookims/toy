@@ -32,23 +32,29 @@ export default class Cannon extends Unit{
                     if (movedCoordData.name === '포') {
                         break;
                     } else {
+                        let flag = false;
                         movedX += dx[i];
                         movedY += dy[i];
                         while(isWall(movedX, movedY)) {
                             movedCoordData = this.data[movedY][movedX];
                             if (movedCoordData !== 0) {
                                 if (movedCoordData.name === '포' || movedCoordData.team === this.team) {
+                                    flag = true;
                                     break;
                                 } else if (movedCoordData.team !== this.team) {
                                     routeArray.push(`${movedX},${movedY}`);
                                     movedX += dx[i];
                                     movedY += dy[i];
+                                    flag = true;
                                     break;
                                 }
                             }
                             routeArray.push(`${movedX},${movedY}`);
                             movedX += dx[i];
                             movedY += dy[i];
+                        }
+                        if (flag) {
+                            break;
                         }
                     }
                 }
