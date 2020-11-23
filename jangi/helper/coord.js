@@ -35,18 +35,32 @@ export default class Coord {
     }
 
     getArrayCoord(x,y)  {
-        const dx = Math.abs((x -3.6 * this.vh) * 8 / this.paddingedWidth);
-        const dy = Math.abs((y -4.8 * this.vh) * 9 / this.paddingedHeight);
+        let dx = Math.abs((x -3.6 * this.vh) * 8 / this.paddingedWidth);
+        let dy = Math.abs((y -4.8 * this.vh) * 9 / this.paddingedHeight);
 
         if (this.isRightCoord(dx, dy)) {
-            return [Math.round(dx), Math.round(dy)];
+            dx = Math.round(dx);
+            dy = Math.round(dy);
+
+            if (dx === 9) {
+                dx = 8
+            } else if (dx === -1) {
+                dx = 0;
+            }
+
+            if (dy === 10) {
+                dy = 9;
+            } else if (dy === -1) {
+                dy = 0;
+            }
+            return [dx, dy];
         } else {
             return [this.x, this.y];
         }
     }
 
     isRightCoord(x,y) {
-        if (x > 8 || y > 9) {
+        if (x > 9 || y > 10) {
             return false
         }
         x = Math.abs(x);

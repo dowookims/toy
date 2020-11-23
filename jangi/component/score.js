@@ -45,6 +45,10 @@ export default class Score {
                     <span class="han-score">${this.han.score}</span>
                 </div>
             </div>
+            <div class="score-board-tool-box">
+                <button>무르기</button>
+                <button>기권</button>
+            </div>
         `;
         return dom;
     }

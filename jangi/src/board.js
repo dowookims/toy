@@ -1,6 +1,8 @@
-import { getInstance } from './helper/index.js';
-import { Line, Score } from './component/index.js';
-import Modal from './component/modal.js';
+import { getInstance } from '../helper/index.js';
+import { Line, Score } from '../component/index.js';
+import Modal from '../component/modal.js';
+import Toast from '../component/toast.js';
+import GameEnd from '../component/gameend.js';
 
 export class Board {
     constructor() {
@@ -10,6 +12,7 @@ export class Board {
         this.innerDom.classList.add('board-inner');
         this.x = 9;
         this.y = 10;
+        this.toast = null;
     }
 
     setData(data) {
@@ -24,6 +27,10 @@ export class Board {
         this.draw();
         this.setScoreBoard(parent);
         this.listenEmitEvent();
+        
+        this.positionModal = new Modal();
+        this.positionModal.render(this.innerDom);
+        this.drawLine();
     }
 
     draw() {
@@ -34,11 +41,6 @@ export class Board {
         this.svg.setAttributeNS(null, 'height', this.height);
 
         this.innerDom.append(this.svg);
-
-        this.positionModal = new Modal();
-        this.positionModal.render(this.innerDom);
-        // this.drawLine();
-        // this.drawGameData();
     }
 
     drawLine() {
@@ -130,14 +132,14 @@ export class Board {
     }
 
     drawGameData() {
-        for (let y=0; y<this.y; y++) {
-            for (let x =0; x<this.x; x++) {
+        for (let y = 0; y < this.y; y++) {
+            for (let x =0; x < this.x; x++) {
                 if (this.totalData.data[y][x] !== 0) {
                     const data = this.totalData.data[y][x];
-                    const s = getInstance(data);
-                    data.instance = s;
-                    s.draw(this.svg);
-                    this.totalData.addTeamData(data.team, s);
+                    const unit = getInstance(data);
+                    data.instance = unit;
+                    unit.draw(this.svg);
+                    this.totalData.addTeamData(data.team, unit);
                 }
             }
         }
@@ -150,6 +152,27 @@ export class Board {
     }
 
     listenEmitEvent() {
+        this.innerDom.addEventListener('setposition', (e) => {
+            const {team, position} = e.detail;
+            this.totalData.setPosition(team, position);
+            this.positionModal.changeText();
+        });
+
+        this.innerDom.addEventListener('jangistart', () => {
+            this.positionModal.remove();
+            this.drawGameData();
+        });
+
+        this.innerDom.addEventListener('jang', () => {
+            this.totalData.data.jang = true;
+            if (!this.toast) {
+                this.toast = new Toast('장군', this.innerDom);
+            } else {
+                this.toast.setMessage('장군');
+                this.toast.render();
+            }
+        });
+
         this.svg.addEventListener('unitmove', (e) => {
             const { from, to } = e.detail;
             const result = this.totalData.changeData(from, to);
@@ -162,9 +185,11 @@ export class Board {
                 this.score.changeTurn(team);
             }
         });
+
         this.svg.addEventListener('gameover', (e) => {
             const { winner } = e.detail;
-            this.totalData.gameover(winner);
+            const end = new GameEnd(winner, this.totalData.count);
+            end.render(this.innerDom);
         })
     }
 }

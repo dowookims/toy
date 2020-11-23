@@ -29,7 +29,7 @@ export default class Cannon extends Unit{
             while(isWall(movedX, movedY)) {
                 let movedCoordData = this.data[movedY][movedX];
                 if (movedCoordData !== 0) {
-                    if (movedCoordData.name === '포') {
+                    if (movedCoordData.korName === '포') {
                         break;
                     } else {
                         let flag = false;
@@ -38,7 +38,7 @@ export default class Cannon extends Unit{
                         while(isWall(movedX, movedY)) {
                             movedCoordData = this.data[movedY][movedX];
                             if (movedCoordData !== 0) {
-                                if (movedCoordData.name === '포' || movedCoordData.team === this.team) {
+                                if (movedCoordData.korName === '포' || movedCoordData.team === this.team) {
                                     flag = true;
                                     break;
                                 } else if (movedCoordData.team !== this.team) {
@@ -70,11 +70,11 @@ export default class Cannon extends Unit{
                         const movedY = this.coord.y - trial;
                         const movedCoordData = this.data[movedY][movedX];
 
-                        if (trial === 1 && movedCoordData.name === '포') {
+                        if (trial === 1 && movedCoordData.korName === '포') {
                             break;
                         }
                         if (trial === 2) {
-                            if (movedCoordData.name === '포') {
+                            if (movedCoordData.korName === '') {
                                 break;
                             }
                             
@@ -94,11 +94,11 @@ export default class Cannon extends Unit{
                         const movedY = this.coord.y + trial;
                         const movedCoordData = this.data[movedY][movedX];
     
-                        if (trial === 1 && movedCoordData.name === '포') {
+                        if (trial === 1 && movedCoordData.korName === '포') {
                             break;
                         }
                         if (trial === 2) {
-                            if (movedCoordData.name === '포') {
+                            if (movedCoordData.korName === '포') {
                                 break;
                             }
                             
@@ -120,11 +120,11 @@ export default class Cannon extends Unit{
                         const movedY = this.coord.y - trial;
                         const movedCoordData = this.data[movedY][movedX];
     
-                        if (trial === 1 && movedCoordData.name === '포') {
+                        if (trial === 1 && movedCoordData.korName === '포') {
                             break;
                         }
                         if (trial === 2) {
-                            if (movedCoordData.name === '포') {
+                            if (movedCoordData.korName === '포') {
                                 break;
                             }
                             
@@ -144,11 +144,11 @@ export default class Cannon extends Unit{
                         const movedY = this.coord.y + trial;
                         const movedCoordData = this.data[movedY][movedX];
     
-                        if (trial === 1 && movedCoordData.name === '포') {
+                        if (trial === 1 && movedCoordData.korName === '포') {
                             break;
                         }
                         if (trial === 2) {
-                            if (movedCoordData.name === '포') {
+                            if (movedCoordData.korName === '포') {
                                 break;
                             }
                             

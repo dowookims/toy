@@ -39,10 +39,6 @@ line {
     stroke: #333;
 }
 
-.x:first-child, .y:first-child, .x:last-child, .y:last-child {
-    stroke-width: 5;
-}
-
 .unit {
     stroke-width: 1;
     fill: white;
@@ -126,6 +122,11 @@ line {
     text-align: center;
 }
 
+.modal-header-description {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
 .modal-body {
     padding: 1em;
 }
@@ -161,4 +162,37 @@ line {
     font-size: 20px;
     font-weight: 600;
     cursor: pointer;
+}
+
+.position-submit:disabled {
+    background-color: #c68a12;
+    opacity: 0.6;
+    color: #ccc;
+}
+
+.selected {
+    background-color: yellow;
+}
+
+.toast {
+    background-color: #eee;
+    border-radius: 15px;
+    position: absolute;
+    left: 35%;
+    top: 35%;
+    width : 30%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.win-cho {
+    color: green;
+}
+
+.win-han {
+    color: red;
 }

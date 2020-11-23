@@ -31,10 +31,10 @@ export const getInstance = (data) => {
     const HORSE = '마';
     const CANNON = '포';
 
-    const { name } = data;
+    const { korName } = data;
     let unit;
 
-    switch (name) {
+    switch (korName) {
         case SOLDIER:
             unit = new Soldier(data, SMALL_SIZE_RADIUS);
             break;

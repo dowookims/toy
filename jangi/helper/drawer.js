@@ -1,8 +1,7 @@
 import { makePolygonPath } from './index.js';
 export default class Drawer {
-    constructor(team, name) {
+    constructor(team) {
         this.team = team;
-        this.name = name;
         this.em = window.getComputedStyle(document.body).getPropertyValue('font-size').slice(0, 2);;
     }
 

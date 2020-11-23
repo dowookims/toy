@@ -2,22 +2,23 @@ import {
     createSvg,
     emitChange,
     createText,
-    jang
+    makePolygonPath
 } from '../helper/index.js'
 
 import Coord from '../helper/coord.js'
 import Drawer from '../helper/drawer.js';
 
 export default class Unit {
-    constructor({data, team , y, x, name, score}, radius, copy=false) {
+    constructor({data, team , y, x, name, korName, score}, radius, copy=false) {
         this.data = data
         this.team = team;
         this.name = name;
+        this.korName = korName;
         this.radius = radius;
         this.copy = copy;
         this.score = score;
         this.coord = new Coord(x, y);
-        this.drawer = new Drawer(team, this.name);
+        this.drawer = new Drawer(team);
     }
 
     draw(parent) {
@@ -26,8 +27,8 @@ export default class Unit {
         const r = this.coord.getRadius() * this.radius;
         const g = createSvg('g');
         const poly = createSvg('polygon');
-        const text = createText(coordX, coordY, this.team, this.name);
-        const points = this.drawer.makePolygonPath(coordX, coordY, r);
+        const text = createText(coordX, coordY, this.name, this.team);
+        const points = makePolygonPath(coordX, coordY, r);
 
         poly.setAttributeNS(null, 'points', points);
         poly.setAttributeNS(null, 'class', 'unit');
@@ -93,8 +94,8 @@ export default class Unit {
                 [clientX, clientY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
             }
 
-            possibleRouteDom.forEach(solider => {
-                solider.remove();
+            possibleRouteDom.forEach(routeDom => {
+                routeDom.remove();
             })
         
             canMove = false;
@@ -105,11 +106,17 @@ export default class Unit {
             }
             moveUnit = null;
 
-            if (this.possibleRoute())
+            this.possibleRoute().forEach(coord => {
+                const [x,y] = coord.split(',').map(v => parseInt(v));
+                if(this.data[y][x] !== 0 && this.team !== this.data[y][x].team && this.data[y][x].korName === "왕") {
+                    const event = new CustomEvent('jang');
+                    document.querySelector('.board-inner').dispatchEvent(event);
+                }
+            })
 
             this.drawer.setUnitLocation(this.poly, this.text, clientX, clientY, this.r);
 
-            this.g.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mousemove', handleMouseMove);
         };
 
         const startClick = (e) => {
@@ -120,7 +127,6 @@ export default class Unit {
                 const getIntCoord = coord => coord.split(',').map(v => parseInt(v));
 
                 possibleRoute = this.possibleRoute();
-
                 possibleRouteDom = possibleRoute
                 .filter(coord => {
                     const [x, y] = getIntCoord(coord);
@@ -128,30 +134,35 @@ export default class Unit {
                 }).map(coord => {
                     const [x, y] = getIntCoord(coord);
 
-                    const data = {
-                        data: [],
-                        team: this.team,
-                        y, 
-                        x,
-                        name: this.name
-                    }
+                    const data = this.getData(x, y);
 
                     const unit = new Unit(data, this.radius, true);
                     unit.draw(this.parent);
-                    return unit
+                    return unit;
                 });
 
-                this.g.addEventListener('mousemove', handleMouseMove);
+                window.addEventListener('mousemove', handleMouseMove);
                 canMove = true;
             } else {
                 handleEndClick(e);
             }
         };
-
         this.g.addEventListener('click', startClick);
     }
 
     possibleRoute() {}
+
+    getData(x, y) {
+        return {
+            data: [],
+            team: this.team,
+            y, 
+            x,
+            name: this.name,
+            korName: this.korName,
+            score: this.score
+        }
+    }
 
     remove() {
         this.g.remove();

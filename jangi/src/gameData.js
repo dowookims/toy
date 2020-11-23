@@ -1,4 +1,3 @@
-// import { Soldier, Scholar, King, Horse, Elephant, Chariot, Cannon } from './unit/index.js'
 
 export class GameData {
     constructor() {
@@ -12,6 +11,7 @@ export class GameData {
             score: 72
         };
         this.data.turn = 'cho';
+        this.count = 0;
 
         this.setData();
     }
@@ -20,13 +20,11 @@ export class GameData {
         this.setSoldier();
         this.setScholar();
         this.setKing();
-        this.setHorse();
-        this.setElephant();
         this.setChariot();
         this.setCannon();
     }
 
-    iterateFirstLine(x1, x2, name, score) {
+    iterateFirstLine(x1, x2, name, korName, score) {
         for (let i=0; i<2; i++) {
             const x = i === 0 ? x1 : x2;
             for (let j=0; j<2; j++) {
@@ -38,6 +36,7 @@ export class GameData {
                     y,
                     x,
                     name,
+                    korName,
                     score
                 };
             }
@@ -45,19 +44,11 @@ export class GameData {
     }
 
     setChariot() {
-        this.iterateFirstLine(0, 8, '차', 13);
-    }
-
-    setHorse() {
-        this.iterateFirstLine(1, 7, '마', 5);
-    }
-
-    setElephant() {
-        this.iterateFirstLine(2, 6, '상', 3);
+        this.iterateFirstLine(0, 8, '車', '차', 13);
     }
 
     setScholar() {
-        this.iterateFirstLine(3, 5, '사', 3);
+        this.iterateFirstLine(3, 5, '士', '사', 3);
     }
 
     setSoldier() {
@@ -66,12 +57,14 @@ export class GameData {
             for (let j = 0; j < 2; j++) {
                 const y = j === 0 ? 6 : 3;
                 const team = j === 0 ? 'cho' : 'han';
+                const name = team === 'cho' ? '卒' : '兵'
                 this.data[y][x] = {
                     data: this.data,
                     team,
                     y,
                     x,
-                    name: '쫄',
+                    name,
+                    korName: '쫄',
                     score: 2
                 };
             }
@@ -84,12 +77,14 @@ export class GameData {
             for (let j=0; j<2; j++) {
                 const y = j === 0 ? 8 : 1;
                 const team = j === 0 ? 'cho' : 'han';
+                const name = team === 'cho' ? '楚' :  '漢';
                 this.data[y][x] = {
                     data: this.data,
                     team,
                     y,
                     x,
-                    name: '왕',
+                    name,
+                    korName: '왕',
                     score: 0
                 };
             }
@@ -107,7 +102,8 @@ export class GameData {
                     team,
                     y,
                     x,
-                    name: '포',
+                    name: '包',
+                    korName: '포',
                     score: 7
                 };
             }
@@ -141,6 +137,7 @@ export class GameData {
 
     changeTurn() {
         this.data.turn = this.data.turn === 'cho' ? 'han' : 'cho';
+        this.count++;
     }
 
     addTeamData(team, unit) {
@@ -149,5 +146,31 @@ export class GameData {
 
     removeTeamData(team, id) {
         this[team].data = this[team].data.filter(instance => instance.id !== id);
+    }
+
+    setPosition(team, index) {
+        const positions = [
+            [[1, '馬'], [2, '象'], [6, '象'], [7, '馬']],
+            [[1, '馬'], [2, '象'], [6, '馬'], [7, '象']],
+            [[1, '象'], [2, '馬'], [6, '象'], [7, '馬']],
+            [[1, '象'], [2, '馬'], [6, '馬'], [7, '象']]
+        ];
+
+        const row = team === 'cho' ? 9 : 0;
+
+        positions[index].forEach(position => {
+            const [col, name] = position;
+            const score = name === '馬' ? 5 : 3;
+            const korName = name === '馬' ? '마' : '상';
+            this.data[row][col] = {
+                data: this.data,
+                team,
+                y: row,
+                x: col,
+                name,
+                korName,
+                score
+            }
+        })
     }
 }
