@@ -1,16 +1,17 @@
 import {
     createSvg,
-    emitChange,
     createText,
-    makePolygonPath
+    makePolygonPath,
+    emitCustomEvent
 } from '../helper/index.js'
 
-import Coord from '../helper/coord.js'
+import Coord from '../helper/coord.js';
 import Drawer from '../helper/drawer.js';
 
 export default class Unit {
     constructor({data, team , y, x, name, korName, score}, radius, copy=false) {
-        this.data = data
+        this.totalData = data
+        this.data = data.mapData;
         this.team = team;
         this.name = name;
         this.korName = korName;
@@ -21,8 +22,7 @@ export default class Unit {
         this.drawer = new Drawer(team);
     }
 
-    draw(parent) {
-        this.parent = parent;
+    preDraw() {
         const [coordX, coordY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
         const r = this.coord.getRadius() * this.radius;
         const g = createSvg('g');
@@ -35,26 +35,23 @@ export default class Unit {
         g.append(poly, text);
         g.setAttributeNS(null, 'id', this.id);
 
-        if (this.copy) {
-            g.setAttributeNS(null, 'class', 'copy');
-        }
-
         this.g = g;
         this.poly = poly;
         this.text = text;
         this.r = r;
+    }
 
-        if (!this.copy) {
-            this.bindEvent();
-        }
-
-        parent.append(g);
+    draw(parent) {
+        this.preDraw();
+        this.parent = parent;
+        this.copy ? this.g.setAttributeNS(null, 'class', 'copy') : this.bindEvent();
+        parent.append(this.g);
     }
 
     bindEvent() {
         let canMove = false;
-        let possibleRoute;
         let moveUnit;
+        let possibleRoute;
         let possibleRouteDom;
 
         const handleMouseMove = (e) => {
@@ -77,8 +74,10 @@ export default class Unit {
             const [movedX, movedY] = this.coord.getArrayCoord(e.offsetX, e.offsetY);
 
             let clientX, clientY;
+
             if (possibleRoute.includes(`${movedX},${movedY}`) && !this.coord.isSameCoord(movedX, movedY)) {
                 [clientX, clientY] = this.coord.getClientCoord(movedX, movedY);
+
                 const from = {
                     x: this.coord.x,
                     y: this.coord.y
@@ -88,29 +87,35 @@ export default class Unit {
                     x: movedX,
                     y: movedY
                 };
-                emitChange(from, to);
+
+                const detailObj = {from, to};
+
+                emitCustomEvent('unitmove', detailObj);
+
                 this.coord.setCoord(movedX, movedY);
             } else {
                 [clientX, clientY] = this.coord.getClientCoord(this.coord.x, this.coord.y);
             }
 
-            possibleRouteDom.forEach(routeDom => {
-                routeDom.remove();
-            })
-        
-            canMove = false;
-            possibleRouteDom = null;
-            possibleRoute = null;
+            possibleRouteDom.forEach(routeDom => routeDom.remove());
+
             if (moveUnit) {
                 moveUnit.remove();
             }
+
+            canMove = false;
+            possibleRouteDom = null;
+            possibleRoute = null;
             moveUnit = null;
 
             this.possibleRoute().forEach(coord => {
-                const [x,y] = coord.split(',').map(v => parseInt(v));
-                if(this.data[y][x] !== 0 && this.team !== this.data[y][x].team && this.data[y][x].korName === "왕") {
-                    const event = new CustomEvent('jang');
-                    document.querySelector('.board-inner').dispatchEvent(event);
+                const [possibleX, possibleY] = this.getIntCoord(coord);
+                const movedData = this.data[possibleY][possibleX];
+                const enemyTeam = this.data[possibleY][possibleX].team;
+
+                if(movedData !== 0 && this.team !== enemyTeam && movedData.korName === "왕") {
+                    const detailObj = { team: enemyTeam };
+                    emitCustomEvent('jang', detailObj);
                 }
             })
 
@@ -120,26 +125,13 @@ export default class Unit {
         };
 
         const startClick = (e) => {
-            if (this.data.turn !== this.team) {
+            if (this.totalData.turn !== this.team) {
                 return;
             }
             if (!canMove) {
-                const getIntCoord = coord => coord.split(',').map(v => parseInt(v));
-
                 possibleRoute = this.possibleRoute();
-                possibleRouteDom = possibleRoute
-                .filter(coord => {
-                    const [x, y] = getIntCoord(coord);
-                    return !this.coord.isSameCoord(x, y);
-                }).map(coord => {
-                    const [x, y] = getIntCoord(coord);
-
-                    const data = this.getData(x, y);
-
-                    const unit = new Unit(data, this.radius, true);
-                    unit.draw(this.parent);
-                    return unit;
-                });
+                possibleRouteDom = this.makePossibleRouteDomArray(possibleRoute);
+                possibleRouteDom.forEach(dom => dom.draw(this.parent));
 
                 window.addEventListener('mousemove', handleMouseMove);
                 canMove = true;
@@ -151,6 +143,24 @@ export default class Unit {
     }
 
     possibleRoute() {}
+
+    getIntCoord(coord) {
+        return coord.split(',').map(v => parseInt(v));
+    }
+
+    makePossibleRouteDomArray(possibleRoute) {
+        return possibleRoute.filter(coord => {
+            const [x, y] = this.getIntCoord(coord);
+
+            return !this.coord.isSameCoord(x, y);
+        }).map(coord => {
+            const [x, y] = this.getIntCoord(coord);
+            const data = this.getData(x, y);
+            const unit = new Unit(data, this.radius, true);
+
+            return unit;
+        });    
+    }
 
     getData(x, y) {
         return {

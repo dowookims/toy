@@ -6,31 +6,39 @@ import GameEnd from '../component/gameend.js';
 
 export class Board {
     constructor() {
+        this.x = 9;
+        this.y = 10;
+        this.toast = null;
+        this.preRender();
+    }
+
+    setData(data) {
+        this.dataInstance = data;
+        this.data = data.data;
+    }
+
+    preRender() {
         this.dom = document.createElement('div');
         this.innerDom = document.createElement('div');
         this.dom.classList.add('board');
         this.innerDom.classList.add('board-inner');
-        this.x = 9;
-        this.y = 10;
-        this.toast = null;
-    }
-
-    setData(data) {
-        this.totalData = data;
     }
 
     render(parent) {
         this.dom.append(this.innerDom);
         parent.appendChild(this.dom);
-        this.width = this.innerDom.clientWidth;
-        this.height = this.innerDom.clientHeight;
+
+        this.setSize();
         this.draw();
         this.setScoreBoard(parent);
         this.listenEmitEvent();
-        
-        this.positionModal = new Modal();
-        this.positionModal.render(this.innerDom);
         this.drawLine();
+        this.setPositionModal();
+    }
+
+    setSize() {
+        this.width = this.innerDom.clientWidth;
+        this.height = this.innerDom.clientHeight;
     }
 
     draw() {
@@ -41,6 +49,88 @@ export class Board {
         this.svg.setAttributeNS(null, 'height', this.height);
 
         this.innerDom.append(this.svg);
+    }
+
+    setPositionModal() {
+        this.positionModal = new Modal();
+        this.positionModal.render(this.innerDom);
+    }
+
+    drawGameData() {
+        for (let y = 0; y < this.y; y++) {
+            for (let x = 0; x < this.x; x++) {
+                if (this.data.mapData[y][x] !== 0) {
+                    const data = this.data.mapData[y][x];
+                    const unit = getInstance(data);
+                    data.instance = unit;
+                    unit.draw(this.svg);
+                    this.dataInstance.addTeamData(data.team, unit);
+                }
+            }
+        }
+        console.log(this.data);
+    }
+
+    setScoreBoard(parent) {
+        this.score = new Score(this.data.cho.score, this.data.han.score);
+        this.score.draw(parent);
+    }
+
+    listenEmitEvent() {
+        this.innerDom.addEventListener('setposition', (e) => {
+            const {team, position} = e.detail;
+            this.dataInstance.setPosition(team, position);
+            this.positionModal.changeText();
+        });
+
+        this.innerDom.addEventListener('jangistart', () => {
+            this.positionModal.remove();
+            this.drawGameData();
+        });
+
+        this.innerDom.addEventListener('jang', (e) => {
+            console.log(e);
+            const attackedTeam = e.detail.team;
+            this.data[attackedTeam].jang = true;
+            if (!this.toast) {
+                this.toast = new Toast('장군', this.innerDom);
+            } else {
+                this.toast.setMessage('장군');
+                this.toast.render();
+            }
+        });
+
+        this.innerDom.addEventListener('mung', (e) => {
+            const depencedTeam = e.detail.team;
+            this.data.data[depencedTeam].jang = false;
+
+            this.toast.setMessage('멍군');
+            this.toast.render();
+        });
+
+        this.innerDom.addEventListener('unitmove', (e) => {
+            const { from, to } = e.detail;
+            const result = this.dataInstance.changeData(from, to);
+            if (result.length === 2) {
+                const [team, score] = result;
+                this.score.calculateScore(team, score);
+                this.score.changeTurn(team);
+            } else if (result.length === 1) {
+                const [team] = result;
+                this.score.changeTurn(team);
+            }
+        });
+
+        this.svg.addEventListener('gameover', (e) => {
+            const { winner } = e.detail;
+            const end = new GameEnd(winner, this.data.count);
+            end.render(this.innerDom);
+        })
+    }
+
+    createLine(coord, className) {
+        const line = new Line(coord, className);
+        line.draw(this.svg)
     }
 
     drawLine() {
@@ -124,72 +214,5 @@ export class Board {
 
             this.createLine(lineCoord, 'x');
         }
-    }
-
-    createLine(coord, className) {
-        const line = new Line(coord, className);
-        line.draw(this.svg)
-    }
-
-    drawGameData() {
-        for (let y = 0; y < this.y; y++) {
-            for (let x =0; x < this.x; x++) {
-                if (this.totalData.data[y][x] !== 0) {
-                    const data = this.totalData.data[y][x];
-                    const unit = getInstance(data);
-                    data.instance = unit;
-                    unit.draw(this.svg);
-                    this.totalData.addTeamData(data.team, unit);
-                }
-            }
-        }
-    }
-
-    setScoreBoard(parent) {
-        const totalData = this.totalData;
-        this.score = new Score(totalData.cho.score, totalData.han.score);
-        this.score.draw(parent);
-    }
-
-    listenEmitEvent() {
-        this.innerDom.addEventListener('setposition', (e) => {
-            const {team, position} = e.detail;
-            this.totalData.setPosition(team, position);
-            this.positionModal.changeText();
-        });
-
-        this.innerDom.addEventListener('jangistart', () => {
-            this.positionModal.remove();
-            this.drawGameData();
-        });
-
-        this.innerDom.addEventListener('jang', () => {
-            this.totalData.data.jang = true;
-            if (!this.toast) {
-                this.toast = new Toast('장군', this.innerDom);
-            } else {
-                this.toast.setMessage('장군');
-                this.toast.render();
-            }
-        });
-
-        this.svg.addEventListener('unitmove', (e) => {
-            const { from, to } = e.detail;
-            const result = this.totalData.changeData(from, to);
-            if (result.length === 2) {
-                const [team, score] = result;
-                this.score.calculateScore(team, score);
-                this.score.changeTurn(team);
-            } else if (result.length === 1) {
-                const [team] = result;
-                this.score.changeTurn(team);
-            }
-        });
-
-        this.svg.addEventListener('gameover', (e) => {
-            const { winner } = e.detail;
-            const end = new GameEnd(winner, this.totalData.count);
-            end.render(this.innerDom);
-        })
     }
 }

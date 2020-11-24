@@ -4,14 +4,9 @@ export const isWall = (x,y) => x >= 0 && y >= 0 && x <= 8 && y <= 9;
 
 export const createSvg = (name) => document.createElementNS('http://www.w3.org/2000/svg', name);
 
-export const emitChange = (from, to) => {
-    const event = new CustomEvent('unitmove', {
-        detail: {
-            from,
-            to
-        }
-    });
-    document.getElementById('board').dispatchEvent(event);
+export const emitCustomEvent = (name, detail) => {
+    const event = new CustomEvent(name, {detail});
+    document.querySelector('.board-inner').dispatchEvent(event);
 }
 
 export const jang = () => {

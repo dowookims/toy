@@ -8,7 +8,9 @@ export default class Toast {
     render() {
         const dom = document.createElement('div');
         dom.innerHTML = this.htmlTemplate();
+        
         this.parent.append(dom);
+
         setTimeout(() => {
             dom.remove();
         }, 1000)

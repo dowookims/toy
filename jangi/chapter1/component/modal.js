@@ -1,4 +1,4 @@
-import { makePolygonPath, createText } from '../helper/index.js';
+import { makePolygonPath, createText, emitCustomEvent } from '../helper/index.js';
 
 export default class Modal {
     constructor() {
@@ -78,7 +78,7 @@ export default class Modal {
                 team: this.team,
                 position: this.selectPosition,
             }
-            this.emitEvent('setposition', detail);
+            emitCustomEvent('setposition', detail);
             this.svgWrapperArr[this.selectPosition].classList.remove('selected');
 
             if (this.trial === 1) {
@@ -87,7 +87,7 @@ export default class Modal {
                 btn.setAttribute('disabled', 'true');
                 this.trial++;
             } else {
-                this.emitEvent('jangistart');
+                emitCustomEvent('jangistart');
             }
         })
     }
@@ -149,10 +149,5 @@ export default class Modal {
         this.wrapperArray = [];
         this.textDomArray = [];
         document.querySelector('.modal').remove();
-    }
-
-    emitEvent(name, detail= {}) {
-        const event = new CustomEvent(name, {detail});
-        document.querySelector('.board-inner').dispatchEvent(event);
     }
 }
