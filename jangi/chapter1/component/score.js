@@ -1,3 +1,6 @@
+import { emitCustomEvent } from "../helper/index.js";
+import Button from "./button.js";
+
 export default class Score {
     constructor(cho, han) {
         this.dom = document.createElement('div');
@@ -12,6 +15,8 @@ export default class Score {
         this.han.dom = this.dom.querySelector('.score-board-han');
         this.cho.scoreDom = this.dom.querySelector('.cho-score');
         this.han.scoreDom = this.dom.querySelector('.han-score');
+        this.buttonBox = this.dom.querySelector('.score-button-box');
+        this.drawButtons();
         parent.append(this.dom);
     }
 
@@ -24,6 +29,23 @@ export default class Score {
         const currentTeam = team === 'cho' ? 'han' : 'cho';
         this[team].dom.classList.remove('turn');
         this[currentTeam].dom.classList.add('turn');
+    }
+
+    drawButtons() {
+        this.renderUndoButton();
+        this.renderGiveupButton();
+    }
+
+    renderUndoButton() {
+        const clickEvent = () => emitCustomEvent('undo');
+        const undoBtn = new Button('무르기', '한 수 무르시겠습니까?', clickEvent);
+        undoBtn.draw(this.buttonBox);
+    }
+
+    renderGiveupButton() {
+        const clickEvent = () => emitCustomEvent('gameover');
+        const giveupBtn = new Button('기권', '기권 하시겠습니까?', clickEvent);
+        giveupBtn.draw(this.buttonBox);
     }
 
     htmlDomString() {
@@ -46,8 +68,8 @@ export default class Score {
                 </div>
             </div>
             <div class="score-board-tool-box">
-                <button>무르기</button>
-                <button>기권</button>
+                <div class="score-button-box">
+                </div>
             </div>
         `;
         return dom;

@@ -1,4 +1,4 @@
-import { isWall } from '../helper/index.js'
+import { emitCustomEvent, isWall } from '../helper/index.js'
 import Unit from './unit.js';
 export default class King extends Unit{
     constructor({data, team , y, x, name}, radius, copy=false) {
@@ -77,11 +77,9 @@ export default class King extends Unit{
 
     remove() {
         super.remove();
-        const event = new CustomEvent('gameover', {
-            detail: {
-                winner : this.team === 'han' ? 'cho' : 'han'
-            }
-        });
-        document.getElementById('board').dispatchEvent(event);
+        const detail = {
+            winner : this.team === 'han' ? 'cho' : 'han'
+        }
+        emitCustomEvent('gameover', detail)
     }
 }

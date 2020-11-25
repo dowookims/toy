@@ -121,8 +121,12 @@ export class Board {
             }
         });
 
-        this.svg.addEventListener('gameover', (e) => {
-            const { winner } = e.detail;
+        this.innerDom.addEventListener('gameover', (e) => {
+            let winner = this.data.turn === 'cho' ? 'han' : 'cho';
+
+            if (e.detail) {
+                winner = e.detail.winner;
+            }
             const end = new GameEnd(winner, this.data.count);
             end.render(this.innerDom);
         })
