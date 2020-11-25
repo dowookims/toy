@@ -33,7 +33,14 @@ export default class Score {
 
     drawButtons() {
         this.renderUndoButton();
+        this.renderDrawButton();
         this.renderGiveupButton();
+    }
+
+    renderDrawButton() {
+        const clickEvent = () => emitCustomEvent('drawgame');
+        const undoBtn = new Button('무승부', '무승부 하시겠습니까?', clickEvent);
+        undoBtn.draw(this.buttonBox);
     }
 
     renderUndoButton() {

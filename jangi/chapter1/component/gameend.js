@@ -1,6 +1,7 @@
 export default class GameEnd {
-    constructor(winner, count) {
+    constructor(winner = '무승부', count = 0) {
         const team = winner === 'cho' ? '초' : '한';
+        this.draw = winner === '무승부';
         this.team = team;
         this.winner = winner;
         this.count = count;
@@ -25,12 +26,18 @@ export default class GameEnd {
     }
 
     htmlTemplate() {
+        const drawMessage = `
+            <p class="modal-header-description">무승부</p>
+        `
+        const giveUpMessage = `
+            <p class="modal-header-title win-${this.winner}">${this.team}승리</p>
+            <p class="modal-header-description">${this.count}수 승리</p>
+        `
         return `
             <div class="container">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <p class="modal-header-title win-${this.winner}">${this.team}승리</p>
-                        <p class="modal-header-description">${this.count}수 승리</p>
+                        ${this.draw ? drawMessage : giveUpMessage}
                     </div>
                 </div>
             </div>

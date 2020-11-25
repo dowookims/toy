@@ -28,6 +28,7 @@ export default class ButtonModal {
         this.yesBtn.addEventListener('click', () => {
             console.log('button modal clicked');
             this.clickFn();
+            this.dom.remove();
         });
     }
 

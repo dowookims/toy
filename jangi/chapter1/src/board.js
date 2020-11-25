@@ -121,6 +121,11 @@ export class Board {
             }
         });
 
+        this.innerDom.addEventListener('drawgame', () => {
+            const end = new GameEnd();
+            end.render(this.innerDom);
+        })
+
         this.innerDom.addEventListener('gameover', (e) => {
             let winner = this.data.turn === 'cho' ? 'han' : 'cho';
 
