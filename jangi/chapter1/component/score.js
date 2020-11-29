@@ -1,5 +1,6 @@
 import { emitCustomEvent } from "../helper/index.js";
 import Button from "./button.js";
+import Timer from "./timer.js";
 
 export default class Score {
     constructor(cho, han) {
@@ -16,6 +17,11 @@ export default class Score {
         this.cho.scoreDom = this.dom.querySelector('.cho-score');
         this.han.scoreDom = this.dom.querySelector('.han-score');
         this.buttonBox = this.dom.querySelector('.score-button-box');
+        this.timerDom = this.dom.querySelector('.score-board-timer');
+        this.cho.timer = new Timer();
+        this.cho.timer.draw(this.timerDom);
+        this.han.timer = new Timer();
+        this.han.timer.draw(this.timerDom);
         this.drawButtons();
         parent.append(this.dom);
     }
@@ -73,6 +79,8 @@ export default class Score {
                     </p>
                     <span class="han-score">${this.han.score}</span>
                 </div>
+            </div>
+            <div class="score-board-timer">
             </div>
             <div class="score-board-tool-box">
                 <div class="score-button-box">

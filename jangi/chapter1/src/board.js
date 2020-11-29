@@ -68,7 +68,6 @@ export class Board {
                 }
             }
         }
-        console.log(this.data);
     }
 
     setScoreBoard(parent) {
@@ -86,10 +85,10 @@ export class Board {
         this.innerDom.addEventListener('jangistart', () => {
             this.positionModal.remove();
             this.drawGameData();
+            this.score.cho.timer.start();
         });
 
         this.innerDom.addEventListener('jang', (e) => {
-            console.log(e);
             const attackedTeam = e.detail.team;
             this.data[attackedTeam].jang = true;
             if (!this.toast) {
@@ -111,6 +110,8 @@ export class Board {
         this.innerDom.addEventListener('unitmove', (e) => {
             const { from, to } = e.detail;
             const result = this.dataInstance.changeData(from, to);
+            const currentTeam = this.data.turn === 'cho' ? 'han' : 'cho';
+            const nextTeam = this.data.turn;
             if (result.length === 2) {
                 const [team, score] = result;
                 this.score.calculateScore(team, score);
@@ -119,6 +120,8 @@ export class Board {
                 const [team] = result;
                 this.score.changeTurn(team);
             }
+            this.score[currentTeam].timer.stop();
+            this.score[nextTeam].timer.start();
         });
 
         this.innerDom.addEventListener('drawgame', () => {

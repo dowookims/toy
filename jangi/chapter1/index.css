@@ -255,3 +255,14 @@ line {
     margin-left: 1em;
     cursor: pointer;
 }
+
+.score-board-timer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.timer-dom {
+    width: 100%;
+    text-align: center;
+}
