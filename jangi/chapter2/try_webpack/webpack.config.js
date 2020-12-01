@@ -53,12 +53,25 @@ module.exports = {
             {
                 test: /\.wav$/,
                 loader: "file-loader",
+                include: path.resolve(__dirname, 'assets'),
                 options: {
-                  publicPath: "./dist/",
-                  name: "[name].[ext]?[hash]",
+                    useRelativePaths: true,
+                    publicPath: './assets',
+                    outputPath: "assets",
+                    name: "[name].[ext]?[hash]",
                 },
             }
         ]
+    },
+    devtool: 'inline-source-map',
+    devServer: {
+        port: 9000,
+        overlay: true,
+        publicPath: "/",
+        contentBase: __dirname + "/dist/",
+        inline: true,
+        hot: true,
+        host: "localhost",
     },
     plugins: [
         new MiniCssExtractPlugin({

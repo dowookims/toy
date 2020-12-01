@@ -3,6 +3,8 @@ import { Line, Score } from '../component/index.js';
 import Modal from '../component/modal.js';
 import Toast from '../component/toast.js';
 import GameEnd from '../component/gameend.js';
+import moveSound from '../assets/move1.wav';
+import jangSound from '../assets/janggun_m.wav';
 
 export class Board {
     constructor() {
@@ -22,8 +24,8 @@ export class Board {
         this.innerDom = document.createElement('div');
         this.dom.classList.add('board');
         this.innerDom.classList.add('board-inner');
-        this.moveAudio = new Audio('../assets/move1.wav');
-        this.jangAudio = new Audio('../assets/janggun_m.wav');
+        this.moveAudio = new Audio(moveSound);
+        this.jangAudio = new Audio(jangSound);
     }
 
     render(parent) {
