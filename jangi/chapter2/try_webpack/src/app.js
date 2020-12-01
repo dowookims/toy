@@ -1,6 +1,8 @@
 import { Board } from './board.js';
 import { GameData } from './gameData.js';
-
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+import "./index.css";
 class App {
     constructor() {
         this.dom = document.getElementById('app');
