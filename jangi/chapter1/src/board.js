@@ -22,18 +22,21 @@ export class Board {
         this.innerDom = document.createElement('div');
         this.dom.classList.add('board');
         this.innerDom.classList.add('board-inner');
+        this.moveAudio = new Audio('../assets/move1.wav');
+        this.jangAudio = new Audio('../assets/janggun_m.wav');
     }
 
     render(parent) {
+        this.parent = parent;
         this.dom.append(this.innerDom);
         parent.appendChild(this.dom);
 
         this.setSize();
         this.draw();
         this.setScoreBoard(parent);
+        this.setPositionModal();
         this.listenEmitEvent();
         this.drawLine();
-        this.setPositionModal();
     }
 
     setSize() {
@@ -97,6 +100,7 @@ export class Board {
                 this.toast.setMessage('장군');
                 this.toast.render();
             }
+            this.jangAudio.play();
         });
 
         this.innerDom.addEventListener('mung', (e) => {
@@ -120,6 +124,7 @@ export class Board {
                 const [team] = result;
                 this.score.changeTurn(team);
             }
+            this.moveAudio.play();
             this.score[currentTeam].timer.stop();
             this.score[nextTeam].timer.start();
         });
@@ -137,6 +142,17 @@ export class Board {
             }
             const end = new GameEnd(winner, this.data.count);
             end.render(this.innerDom);
+        })
+
+        this.innerDom.addEventListener('replay', () => {
+            this.score.dom.remove();
+            this.dataInstance.reset();
+            this.svg.remove();
+            this.draw();
+            this.drawLine();
+            this.setScoreBoard(this.parent);
+            this.drawGameData();
+            this.setPositionModal();
         })
     }
 

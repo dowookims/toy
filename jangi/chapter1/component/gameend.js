@@ -1,3 +1,5 @@
+import { emitCustomEvent } from "../helper/index.js";
+
 export default class GameEnd {
     constructor(winner = '무승부', count = 0) {
         const team = winner === 'cho' ? '초' : '한';
@@ -13,6 +15,7 @@ export default class GameEnd {
         this.dom = document.createElement('div');
         this.dom.className = 'modal';
         this.dom.innerHTML = container;
+        this.replayButton = this.dom.querySelector('.replay');
     }
 
     render(parent) {
@@ -22,7 +25,10 @@ export default class GameEnd {
     }
 
     bindEvent() {
-
+        this.replayButton.addEventListener('click', () => {
+            emitCustomEvent('replay');
+            this.dom.remove();
+        });
     }
 
     htmlTemplate() {
@@ -33,11 +39,15 @@ export default class GameEnd {
             <p class="modal-header-title win-${this.winner}">${this.team}승리</p>
             <p class="modal-header-description">${this.count}수 승리</p>
         `
+
         return `
             <div class="container">
                 <div class="modal-content">
                     <div class="modal-header">
                         ${this.draw ? drawMessage : giveUpMessage}
+                    </div>
+                    <div class="modal-body">
+                        <button class="replay">다시하기</button>
                     </div>
                 </div>
             </div>

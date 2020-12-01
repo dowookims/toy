@@ -7,6 +7,7 @@ export default class Soldier extends Unit {
         super({data, team , y, x, name}, radius, copy);
         const id = `soldier${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'small';
     }
 
     draw(parent) {

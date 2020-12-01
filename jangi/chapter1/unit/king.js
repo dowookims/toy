@@ -6,6 +6,7 @@ export default class King extends Unit{
 
         const id = `king${y}${x}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'big';
     }
 
     draw(parent) {

@@ -178,4 +178,24 @@ export class GameData {
             }
         }
     }
+
+    reset() {
+        this.data = {
+            mapData: Array.from(Array(10), () => { return Array(9).fill(0) }),
+            han: {
+                data: [],
+                score: 73.5,
+                jang: false
+            },
+            cho: {
+                data: [],
+                score: 72,
+                jang: false
+            },
+            turn: 'cho'
+        };
+        this.count = 0;
+
+        this.setData();
+    }
 }

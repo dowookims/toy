@@ -8,6 +8,7 @@ export default class Chariot extends Unit{
 
         const id = `chariot${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'medium';
     }
 
     draw(parent) {

@@ -6,6 +6,7 @@ export default class Elephant extends Unit{
 
         const id = `elephant${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'medium';
     }
 
     draw(parent) {

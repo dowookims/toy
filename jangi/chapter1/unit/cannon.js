@@ -8,6 +8,7 @@ export default class Cannon extends Unit{
 
         const id = `cannon${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'medium';
     }
 
     draw(parent) {

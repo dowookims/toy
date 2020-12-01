@@ -8,6 +8,7 @@ export default class Scholar extends Unit{
 
         const id = `scholar${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'small';
     }
 
     draw(parent) {

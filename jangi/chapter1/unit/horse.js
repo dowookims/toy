@@ -8,6 +8,7 @@ export default class Horse extends Unit {
 
         const id = `horse${x}${y}`;
         this.id = this.copy ? id.concat('copy') : id;
+        this.size = 'medium';
     }
 
     draw(parent) {
