@@ -66,6 +66,9 @@ export class Board {
                     const data = this.data.mapData[y][x];
                     const unit = getInstance(data);
                     data.instance = unit;
+                    if (unit.size === 'big') {
+                        this.data[unit.team].king = unit;
+                    }
                     unit.draw(this.svg);
                     this.dataInstance.addTeamData(data.team, unit);
                 }
@@ -93,6 +96,7 @@ export class Board {
 
         this.innerDom.addEventListener('jang', (e) => {
             const attackedTeam = e.detail.team;
+            console.log(this.data, 'board data');
             this.data[attackedTeam].jang = true;
             if (!this.toast) {
                 this.toast = new Toast('장군', this.innerDom);
@@ -118,12 +122,13 @@ export class Board {
             const nextTeam = this.data.turn;
             if (result.length === 2) {
                 const [team, score] = result;
-                this.score.calculateScore(team, score);
                 this.score.changeTurn(team);
-            } else if (result.length === 1) {
+                this.score.calculateScore(team, score);
+            } else {
                 const [team] = result;
                 this.score.changeTurn(team);
             }
+            
             this.moveAudio.play();
             this.score[currentTeam].timer.stop();
             this.score[nextTeam].timer.start();

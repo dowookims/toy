@@ -116,6 +116,7 @@ export default class Unit {
                 if(movedData !== 0 && this.team !== enemyTeam && movedData.korName === "왕") {
                     const detailObj = { team: enemyTeam };
                     emitCustomEvent('jang', detailObj);
+                    console.log(this);
                 }
             })
 

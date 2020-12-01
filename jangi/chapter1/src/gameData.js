@@ -6,12 +6,14 @@ export class GameData {
             han: {
                 data: [],
                 score: 73.5,
-                jang: false
+                jang: false,
+                king: null
             },
             cho: {
                 data: [],
                 score: 72,
-                jang: false
+                jang: false,
+                king: null
             },
             turn: 'cho'
         };
@@ -64,7 +66,8 @@ export class GameData {
     }
 
     removeTeamData(team, id) {
-        this.data[team].data = this.data[team].data.filter(instance => instance.id !== id);
+        const idx = this.data[team].data.findIndex(v => v.id === id);
+        this.data[team].data.splice(idx, 1);
     }
 
     setPosition(team, index) {
