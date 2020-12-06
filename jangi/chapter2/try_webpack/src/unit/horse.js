@@ -1,78 +1,76 @@
-import { isWall } from '../helper/index.js'
+import { isWall } from '../helper/index.js';
 
 import Unit from './unit.js';
 
 export default class Horse extends Unit {
-    constructor({data, team , y, x, name}, radius, copy=false) {
-        super({data, team , y, x, name}, radius, copy);
+  constructor({ data, team, y, x, name }, radius, copy = false) {
+    super({ data, team, y, x, name }, radius, copy);
 
-        const id = `horse${x}${y}`;
-        this.id = this.copy ? id.concat('copy') : id;
-        this.size = 'medium';
-    }
+    const id = `horse${x}${y}`;
+    this.id = this.copy ? id.concat('copy') : id;
+    this.size = 'medium';
+  }
 
-    draw(parent) {
-        super.draw(parent);
-    }
+  draw(parent) {
+    super.draw(parent);
+  }
 
-    bindEvent() {
-        super.bindEvent();
-    }
+  bindEvent() {
+    super.bindEvent();
+  }
 
-    possibleRoute() {
-        const routeArray = [`${this.coord.x},${this.coord.y}`];
-        const [dx, dy] = this.moveableDirection();
+  possibleRoute() {
+    const routeArray = [`${this.coord.x},${this.coord.y}`];
+    const [dx, dy] = this.moveableDirection();
 
-        for (let i=0; i<dx.length; i++) {
-            let movedX = this.coord.x;
-            let movedY = this.coord.y;
-            for (let j=0; j<dx[i].length; j++) {
-                movedX += dx[i][j];
-                movedY += dy[i][j];
-                if (j === dx[i].length - 1) {
-                    if (isWall(movedX, movedY)) {
-                        if (this.data[movedY][movedX] !== 0 && this.data[movedY][movedX].team === this.team) {
-                            break
-                        }
-                        routeArray.push(`${movedX},${movedY}`);
-                    }
-                } else {
-                    if (!(isWall(movedX, movedY) && this.data[movedY][movedX] === 0)) {
-                        break
-                    }
-                }
+    for (let i = 0; i < dx.length; i++) {
+      let movedX = this.coord.x;
+      let movedY = this.coord.y;
+      for (let j = 0; j < dx[i].length; j++) {
+        movedX += dx[i][j];
+        movedY += dy[i][j];
+        if (j === dx[i].length - 1) {
+          if (isWall(movedX, movedY)) {
+            if (this.data[movedY][movedX] !== 0 && this.data[movedY][movedX].team === this.team) {
+              break;
             }
+            routeArray.push(`${movedX},${movedY}`);
+          }
+        } else if (!(isWall(movedX, movedY) && this.data[movedY][movedX] === 0)) {
+          break;
         }
-        
-        return routeArray
+      }
     }
 
-    moveableDirection() {
-        const dx = [
-            [-1, -1],
-            [-1, -1],
-            [0,  -1],
-            [0, 1],
-            [1, 1],
-            [1, 1],
-            [0,  -1],
-            [0, 1]
-        ];
-        const dy = [
-            [0,  -1],
-            [0, 1],
-            [-1,  -1],
-            [-1,  -1],
-            [0, 1],
-            [0,  -1],
-            [1, 1],
-            [1, 1]
-        ];
+    return routeArray;
+  }
 
-        return [dx, dy];
-    }
+  moveableDirection() {
+    const dx = [
+      [-1, -1],
+      [-1, -1],
+      [0, -1],
+      [0, 1],
+      [1, 1],
+      [1, 1],
+      [0, -1],
+      [0, 1],
+    ];
+    const dy = [
+      [0, -1],
+      [0, 1],
+      [-1, -1],
+      [-1, -1],
+      [0, 1],
+      [0, -1],
+      [1, 1],
+      [1, 1],
+    ];
 
-    remove() {
-        super.remove();
-    }
+    return [dx, dy];
+  }
+
+  remove() {
+    super.remove();
+  }
 }

@@ -1,99 +1,99 @@
 import { makePolygonPath, createText, emitCustomEvent } from '../helper/index.js';
 
 export default class Modal {
-    constructor() {
-        this.trial = 1;
-        this.team = 'han';
-        this.selected = false;
-        this.svgWrapperArr = [];
-        this.textDomArr = [];
-        this.positions = [
-            ['馬', '象', '象', '馬'],
-            ['馬', '象', '馬', '象'],
-            ['象', '馬', '象', '馬'],
-            ['象', '馬', '馬', '象']
-        ];
-        this.preRender();
-    }
+  constructor() {
+    this.trial = 1;
+    this.team = 'han';
+    this.selected = false;
+    this.svgWrapperArr = [];
+    this.textDomArr = [];
+    this.positions = [
+      ['馬', '象', '象', '馬'],
+      ['馬', '象', '馬', '象'],
+      ['象', '馬', '象', '馬'],
+      ['象', '馬', '馬', '象'],
+    ];
+    this.preRender();
+  }
 
-    preRender() {
-        const container = this.htmlTemplate();
-        this.dom = document.createElement('div');
-        this.dom.className = 'modal';
-        this.dom.innerHTML = container;
-        this.positionDom = this.dom.querySelector('.modal-position');
-    }
+  preRender() {
+    const container = this.htmlTemplate();
+    this.dom = document.createElement('div');
+    this.dom.className = 'modal';
+    this.dom.innerHTML = container;
+    this.positionDom = this.dom.querySelector('.modal-position');
+  }
 
-    render(parent) {
-        parent.append(this.dom);
+  render(parent) {
+    parent.append(this.dom);
 
-        this.positions.forEach((position, pid) => {
-            const svg = this.makePositionSVG(pid);
-            const svgWrapper = this.makeSVGWrapper(pid);
+    this.positions.forEach((position, pid) => {
+      const svg = this.makePositionSVG(pid);
+      const svgWrapper = this.makeSVGWrapper(pid);
 
-            position.forEach((name, idx) => {
-                const index = idx * 2 + 1;
-                const text = createText(20 * index, 25, name, this.team);
-                const polygon = this.createPolygon(index);
-                
-                svg.append(polygon);
-                svg.append(text);
+      position.forEach((name, idx) => {
+        const index = idx * 2 + 1;
+        const text = createText(20 * index, 25, name, this.team);
+        const polygon = this.createPolygon(index);
 
-                this.textDomArr.push(text);
-            })
+        svg.append(polygon);
+        svg.append(text);
 
-            svgWrapper.append(svg);
-            this.positionDom.append(svgWrapper);
-            this.svgWrapperArr.push(svgWrapper);
-        });
-        this.bindEvent();
-    }
+        this.textDomArr.push(text);
+      });
 
-    bindEvent() {
-        const btn = document.querySelector('.position-submit');
+      svgWrapper.append(svg);
+      this.positionDom.append(svgWrapper);
+      this.svgWrapperArr.push(svgWrapper);
+    });
+    this.bindEvent();
+  }
 
-        this.svgWrapperArr.forEach(dom => {
-            dom.addEventListener('click', (e) => {
-                let target = e.target;
+  bindEvent() {
+    const btn = document.querySelector('.position-submit');
 
-                while (!target.dataset.id) {
-                    target = e.target.parentNode;
-                }
+    this.svgWrapperArr.forEach(dom => {
+      dom.addEventListener('click', e => {
+        let { target } = e;
 
-                if (this.selectPosition) {
-                    this.svgWrapperArr[this.selectPosition].classList.remove('selected')
-                }
-                this.selected = true;
-                this.svgWrapperArr[target.dataset.id].classList.add('selected');
-                this.selectPosition = target.dataset.id;
-                btn.removeAttribute('disabled');
-            })
-        })
+        while (!target.dataset.id) {
+          target = e.target.parentNode;
+        }
 
-        btn.addEventListener('click', () => {
-            if (!this.selected) {
-                return;
-            }
-            const detail = {
-                team: this.team,
-                position: this.selectPosition,
-            }
-            emitCustomEvent('setposition', detail);
-            this.svgWrapperArr[this.selectPosition].classList.remove('selected');
+        if (this.selectPosition) {
+          this.svgWrapperArr[this.selectPosition].classList.remove('selected');
+        }
+        this.selected = true;
+        this.svgWrapperArr[target.dataset.id].classList.add('selected');
+        this.selectPosition = target.dataset.id;
+        btn.removeAttribute('disabled');
+      });
+    });
 
-            if (this.trial === 1) {
-                this.team = 'cho';
-                this.selectPosition = null;
-                btn.setAttribute('disabled', 'true');
-                this.trial++;
-            } else {
-                emitCustomEvent('jangistart');
-            }
-        })
-    }
+    btn.addEventListener('click', () => {
+      if (!this.selected) {
+        return;
+      }
+      const detail = {
+        team: this.team,
+        position: this.selectPosition,
+      };
+      emitCustomEvent('setposition', detail);
+      this.svgWrapperArr[this.selectPosition].classList.remove('selected');
 
-    htmlTemplate() {
-        return `
+      if (this.trial === 1) {
+        this.team = 'cho';
+        this.selectPosition = null;
+        btn.setAttribute('disabled', 'true');
+        this.trial++;
+      } else {
+        emitCustomEvent('jangistart');
+      }
+    });
+  }
+
+  htmlTemplate() {
+    return `
             <div class="container">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -109,45 +109,45 @@ export default class Modal {
                     </div>
                 </div>
             </div>
-        `
-    }
+        `;
+  }
 
-    changeText() {
-        this.textDomArr.forEach(dom => {
-            dom.setAttributeNS(null, 'fill', 'green');
-        })
-    }
+  changeText() {
+    this.textDomArr.forEach(dom => {
+      dom.setAttributeNS(null, 'fill', 'green');
+    });
+  }
 
-    makeSVGWrapper(id) {
-        const svgWrapper = document.createElement('div');
-        svgWrapper.className = 'svg-wrapper';
-        svgWrapper.dataset.id = id;
-        return svgWrapper;
-    }
+  makeSVGWrapper(id) {
+    const svgWrapper = document.createElement('div');
+    svgWrapper.className = 'svg-wrapper';
+    svgWrapper.dataset.id = id;
+    return svgWrapper;
+  }
 
-    makePositionSVG(id) {
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.dataset.id = id;
-        svg.setAttributeNS(null, 'width',  160);
-        svg.setAttributeNS(null, 'height',  50);
-        svg.setAttributeNS(null, 'class', 'position-item');
-        return svg;
-    }
+  makePositionSVG(id) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.dataset.id = id;
+    svg.setAttributeNS(null, 'width', 160);
+    svg.setAttributeNS(null, 'height', 50);
+    svg.setAttributeNS(null, 'class', 'position-item');
+    return svg;
+  }
 
-    createPolygon(index) {
-        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        const path = makePolygonPath(20 * index, 25, 20);
-        polygon.setAttributeNS(null, 'points', path);
-        polygon.setAttributeNS(null, 'class', 'unit');
-        return polygon;
-    }
+  createPolygon(index) {
+    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    const path = makePolygonPath(20 * index, 25, 20);
+    polygon.setAttributeNS(null, 'points', path);
+    polygon.setAttributeNS(null, 'class', 'unit');
+    return polygon;
+  }
 
-    remove() {
-        this.trial = 1;
-        this.team = 'han';
-        this.selected = false;
-        this.wrapperArray = [];
-        this.textDomArray = [];
-        document.querySelector('.modal').remove();
-    }
+  remove() {
+    this.trial = 1;
+    this.team = 'han';
+    this.selected = false;
+    this.wrapperArray = [];
+    this.textDomArray = [];
+    document.querySelector('.modal').remove();
+  }
 }

@@ -1,38 +1,38 @@
 export default class ButtonModal {
-    constructor(openMessage, clickFn) {
-        this.openMessage = openMessage;
-        this.clickFn = clickFn;
-        this.preRender();
-    }
+  constructor(openMessage, clickFn) {
+    this.openMessage = openMessage;
+    this.clickFn = clickFn;
+    this.preRender();
+  }
 
-    preRender() {
-        const content = this.htmlTemplate();
-        this.dom = document.createElement('div');
-        this.dom.className = 'button-modal-shell';
-        this.dom.innerHTML = content;
-        this.messageDom = this.dom.querySelector('.button-modal-content');
-        this.messageDom.innerText = this.openMessage;
-        this.yesBtn = this.dom.querySelector('.button-modal-yes');
-        this.noBtn = this.dom.querySelector('.button-modal-no');
-    }
+  preRender() {
+    const content = this.htmlTemplate();
+    this.dom = document.createElement('div');
+    this.dom.className = 'button-modal-shell';
+    this.dom.innerHTML = content;
+    this.messageDom = this.dom.querySelector('.button-modal-content');
+    this.messageDom.innerText = this.openMessage;
+    this.yesBtn = this.dom.querySelector('.button-modal-yes');
+    this.noBtn = this.dom.querySelector('.button-modal-no');
+  }
 
-    render() {
-        this.bindEvent();
-        document.body.append(this.dom);
-    }
+  render() {
+    this.bindEvent();
+    document.body.append(this.dom);
+  }
 
-    bindEvent() {
-        this.noBtn.addEventListener('click', () => {
-            this.dom.remove();
-        })
-        this.yesBtn.addEventListener('click', () => {
-            this.clickFn();
-            this.dom.remove();
-        });
-    }
+  bindEvent() {
+    this.noBtn.addEventListener('click', () => {
+      this.dom.remove();
+    });
+    this.yesBtn.addEventListener('click', () => {
+      this.clickFn();
+      this.dom.remove();
+    });
+  }
 
-    htmlTemplate() {
-        return `
+  htmlTemplate() {
+    return `
             <div class="button-modal-container">
                 <div class="button-modal">
                     <div class="button-modal-content">
@@ -47,6 +47,6 @@ export default class ButtonModal {
                     </div>
                 </div>
             </div>
-        `
-    }
+        `;
+  }
 }

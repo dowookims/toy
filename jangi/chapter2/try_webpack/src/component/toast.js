@@ -1,30 +1,30 @@
 export default class Toast {
-    constructor(message, parent) {
-        this.message = message;
-        this.parent = parent;
-        this.render();
-    }
+  constructor(message, parent) {
+    this.message = message;
+    this.parent = parent;
+    this.render();
+  }
 
-    render() {
-        const dom = document.createElement('div');
-        dom.innerHTML = this.htmlTemplate();
-        
-        this.parent.append(dom);
+  render() {
+    const dom = document.createElement('div');
+    dom.innerHTML = this.htmlTemplate();
 
-        setTimeout(() => {
-            dom.remove();
-        }, 1000)
-    }
+    this.parent.append(dom);
 
-    htmlTemplate() {
-        return `
+    setTimeout(() => {
+      dom.remove();
+    }, 1000);
+  }
+
+  htmlTemplate() {
+    return `
             <div class="toast">
                 ${this.message}
             </div>
-        `
-    }
+        `;
+  }
 
-    setMessage(message) {
-        this.message = message;
-    }
+  setMessage(message) {
+    this.message = message;
+  }
 }

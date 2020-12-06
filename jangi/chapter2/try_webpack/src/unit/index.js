@@ -16,12 +16,4 @@ import Cannon from './cannon.js';
 //     Cannon
 // }
 
-export {
-    Soldier,
-    Scholar,
-    King,
-    Cannon,
-    Chariot,
-    Elephant,
-    Horse
-}
+export { Soldier, Scholar, King, Cannon, Chariot, Elephant, Horse };
