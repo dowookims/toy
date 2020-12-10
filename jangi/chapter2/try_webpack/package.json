@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx webpack serve",
     "build": "npx webpack --config webpack.config.js",
-    "format": "prettier-eslint \"src/**/*.js\""
+    "lint": "prettier --write $PWD\"/src/**/*.js\""
   },
   "keywords": [],
   "author": "",
