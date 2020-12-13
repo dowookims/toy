@@ -1,8 +1,8 @@
 import { getInstance } from './helper';
-import { Line, Score } from '../component/index.js';
-import Modal from '../component/modal.js';
-import Toast from '../component/toast.js';
-import GameEnd from '../component/gameend.js';
+import { Line, Score } from './component/index.js';
+import Modal from './component/modal.js';
+import Toast from './component/toast.js';
+import GameEnd from './component/gameend.js';
 import moveSound from '../assets/move1.wav';
 import jangSound from '../assets/janggun_m.wav';
 
