@@ -1,4 +1,4 @@
-import { emitCustomEvent, isWall } from '../helper/index.js';
+import { emitCustomEvent, isWall } from '../../helper/index.js'
 import Unit from './unit.js';
 
 export default class King extends Unit {

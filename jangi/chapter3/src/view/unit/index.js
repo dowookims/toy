@@ -6,14 +6,4 @@ import Elephant from './elephant.js';
 import Chariot from './chariot.js';
 import Cannon from './cannon.js';
 
-// export {
-//     Scholar,
-//     Soldier,
-//     King,
-//     Horse,
-//     Elephant,
-//     Chariot,
-//     Cannon
-// }
-
 export { Soldier, Scholar, King, Cannon, Chariot, Elephant, Horse };

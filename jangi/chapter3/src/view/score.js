@@ -1,5 +1,5 @@
 import { emitCustomEvent } from '../helper/index.js';
-import Button from './button.js';
+import Button from '../view/button.js';
 import Timer from './timer.js';
 
 export default class Score {

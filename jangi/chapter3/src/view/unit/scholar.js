@@ -1,4 +1,4 @@
-import { isWall } from '../helper/index.js';
+import { isWall } from '../../helper/index.js'
 import Unit from './unit.js';
 
 export default class Scholar extends Unit {

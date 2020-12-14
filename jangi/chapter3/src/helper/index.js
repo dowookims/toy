@@ -1,4 +1,4 @@
-import { Soldier, Scholar, King, Chariot, Elephant, Horse, Cannon } from '../unit/index.js';
+import { Soldier, Scholar, King, Chariot, Elephant, Horse, Cannon } from '../view/unit/index.js';
 
 export const isWall = (x, y) => x >= 0 && y >= 0 && x <= 8 && y <= 9;
 

@@ -1,7 +1,7 @@
-import { createSvg, createText, makePolygonPath, emitCustomEvent } from '../helper/index.js';
+import { createSvg, createText, makePolygonPath, emitCustomEvent } from '../../helper/index.js'
 
-import Coord from '../helper/coord.js';
-import Drawer from '../helper/drawer.js';
+import Coord from '../../helper/coord.js';
+import Drawer from '../../helper/drawer.js';
 
 export default class Unit {
 	constructor({ data, team, y, x, name, korName, score }, radius, copy = false) {

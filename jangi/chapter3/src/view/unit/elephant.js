@@ -1,12 +1,11 @@
-import { isWall } from '../helper/index.js';
-
+import { isWall } from '../../helper/index.js'
 import Unit from './unit.js';
 
-export default class Horse extends Unit {
+export default class Elephant extends Unit {
 	constructor({ data, team, y, x, name }, radius, copy = false) {
 		super({ data, team, y, x, name }, radius, copy);
 
-		const id = `horse${x}${y}`;
+		const id = `elephant${x}${y}`;
 		this.id = this.copy ? id.concat('copy') : id;
 		this.size = 'medium';
 	}
@@ -47,24 +46,24 @@ export default class Horse extends Unit {
 
 	moveableDirection() {
 		const dx = [
-			[-1, -1],
-			[-1, -1],
-			[0, -1],
-			[0, 1],
-			[1, 1],
-			[1, 1],
-			[0, -1],
-			[0, 1],
+			[-1, -1, -1],
+			[-1, -1, -1],
+			[0, -1, -1],
+			[0, 1, 1],
+			[1, 1, 1],
+			[1, 1, 1],
+			[0, -1, -1],
+			[0, 1, 1],
 		];
 		const dy = [
-			[0, -1],
-			[0, 1],
-			[-1, -1],
-			[-1, -1],
-			[0, 1],
-			[0, -1],
-			[1, 1],
-			[1, 1],
+			[0, -1, -1],
+			[0, 1, 1],
+			[-1, -1, -1],
+			[-1, -1, -1],
+			[0, 1, 1],
+			[0, -1, -1],
+			[1, 1, 1],
+			[1, 1, 1],
 		];
 
 		return [dx, dy];

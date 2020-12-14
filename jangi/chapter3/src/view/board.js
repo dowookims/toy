@@ -1,10 +1,8 @@
-import { getInstance } from './helper';
-import { Line, Score } from './component/index.js';
-import Modal from './component/modal.js';
-import Toast from './component/toast.js';
-import GameEnd from './component/gameend.js';
-import moveSound from '../assets/move1.wav';
-import jangSound from '../assets/janggun_m.wav';
+import { getInstance } from '../helper/index.js';
+import { Line, Score } from './index.js';
+import Modal from './modal.js';
+import moveSound from '../../assets/move1.wav';
+import jangSound from '../../assets/janggun_m.wav';
 
 export default class Board {
 	constructor() {
@@ -37,7 +35,6 @@ export default class Board {
 		this.draw();
 		this.setScoreBoard(parent);
 		this.setPositionModal();
-		this.listenEmitEvent();
 		this.drawLine();
 	}
 
@@ -81,86 +78,6 @@ export default class Board {
 	setScoreBoard(parent) {
 		this.score = new Score(this.data.cho.score, this.data.han.score);
 		this.score.draw(parent);
-	}
-
-	listenEmitEvent() {
-		this.innerDom.addEventListener('setposition', e => {
-			const { team, position } = e.detail;
-			this.dataInstance.setPosition(team, position);
-			this.positionModal.changeText();
-		});
-
-		this.innerDom.addEventListener('jangistart', () => {
-			this.positionModal.remove();
-			this.drawGameData();
-			this.score.cho.timer.start();
-		});
-
-		this.innerDom.addEventListener('jang', e => {
-			const attackedTeam = e.detail.team;
-			console.log(this.data, 'board data');
-			this.data[attackedTeam].jang = true;
-			if (!this.toast) {
-				this.toast = new Toast('장군', this.innerDom);
-			} else {
-				this.toast.setMessage('장군');
-				this.toast.render();
-			}
-			this.jangAudio.play();
-		});
-
-		this.innerDom.addEventListener('mung', e => {
-			const depencedTeam = e.detail.team;
-			this.data.data[depencedTeam].jang = false;
-
-			this.toast.setMessage('멍군');
-			this.toast.render();
-		});
-
-		this.innerDom.addEventListener('unitmove', e => {
-			const { from, to } = e.detail;
-			const result = this.dataInstance.changeData(from, to);
-			const currentTeam = this.data.turn === 'cho' ? 'han' : 'cho';
-			const nextTeam = this.data.turn;
-			if (result.length === 2) {
-				const [team, score] = result;
-				this.score.changeTurn(team);
-				this.score.calculateScore(team, score);
-			} else {
-				const [team] = result;
-				this.score.changeTurn(team);
-			}
-
-			this.moveAudio.play();
-			this.score[currentTeam].timer.stop();
-			this.score[nextTeam].timer.start();
-		});
-
-		this.innerDom.addEventListener('drawgame', () => {
-			const end = new GameEnd();
-			end.render(this.innerDom);
-		});
-
-		this.innerDom.addEventListener('gameover', e => {
-			let winner = this.data.turn === 'cho' ? 'han' : 'cho';
-
-			if (e.detail) {
-				winner = e.detail.winner;
-			}
-			const end = new GameEnd(winner, this.data.count);
-			end.render(this.innerDom);
-		});
-
-		this.innerDom.addEventListener('replay', () => {
-			this.score.dom.remove();
-			this.dataInstance.reset();
-			this.svg.remove();
-			this.draw();
-			this.drawLine();
-			this.setScoreBoard(this.parent);
-			this.drawGameData();
-			this.setPositionModal();
-		});
 	}
 
 	createLine(coord, className) {

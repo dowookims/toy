@@ -1,25 +1,17 @@
+import TeamData from './teamData.js';
+
 export default class GameData {
 	constructor() {
-		this.data = {
-			mapData: Array.from(Array(10), () => {
-				return Array(9).fill(0);
-			}),
-			han: {
-				data: [],
-				score: 73.5,
-				jang: false,
-				king: null,
-			},
-			cho: {
-				data: [],
-				score: 72,
-				jang: false,
-				king: null,
-			},
-			turn: 'cho',
-		};
-		this.count = 0;
+		this.initData();
+	}
 
+	initData() {
+		this.map = Array.from(Array(10), () => Array(9).fill(0));
+		this.han = new TeamData('han');
+		this.cho = new TeamData('cho');
+		this.turn = 'cho';
+		this.count = 0;
+		this.winner = null;
 		this.setData();
 	}
 
@@ -32,8 +24,8 @@ export default class GameData {
 	}
 
 	changeData(from, to) {
-		const fromData = this.data.mapData[from.y][Math.abs(from.x)];
-		const toData = this.data.mapData[to.y][Math.abs(to.x)];
+		const fromData = this.map[from.y][Math.abs(from.x)];
+		const toData = this.map[to.y][Math.abs(to.x)];
 		let result = [];
 
 		if (toData !== 0 && fromData.team !== toData.team) {
@@ -46,29 +38,29 @@ export default class GameData {
 			result = [fromData.team];
 		}
 
-		this.data.mapData[to.y][to.x] = fromData;
-		this.data.mapData[from.y][from.x] = 0;
+		this.map[to.y][to.x] = fromData;
+		this.map[from.y][from.x] = 0;
 
 		return result;
 	}
 
 	gameover(winner) {
-		this.data.turn = '';
+		this.turn = '';
 		this.winner = winner;
 	}
 
 	changeTurn() {
-		this.data.turn = this.data.turn === 'cho' ? 'han' : 'cho';
+		this.turn = this.turn === 'cho' ? 'han' : 'cho';
 		this.count += 1;
 	}
 
 	addTeamData(team, unit) {
-		this.data[team].data.push(unit);
+		this[team].data.push(unit);
 	}
 
 	removeTeamData(team, id) {
-		const idx = this.data[team].data.findIndex(v => v.id === id);
-		this.data[team].data.splice(idx, 1);
+		const idx = this[team].data.findIndex(v => v.id === id);
+		this[team].data.splice(idx, 1);
 	}
 
 	setPosition(team, index) {
@@ -105,7 +97,7 @@ export default class GameData {
 			const [col, name] = position;
 			const score = name === '馬' ? 5 : 3;
 			const korName = name === '馬' ? '마' : '상';
-			this.data.mapData[row][col] = {
+			this.map[row][col] = {
 				data: this.data,
 				team,
 				y: row,
@@ -123,7 +115,7 @@ export default class GameData {
 			for (let j = 0; j < 2; j++) {
 				const y = j === 0 ? 9 : 0;
 				const team = j === 0 ? 'cho' : 'han';
-				this.data.mapData[y][x] = {
+				this.map[y][x] = {
 					data: this.data,
 					team,
 					y,
@@ -151,7 +143,7 @@ export default class GameData {
 				const y = j === 0 ? 6 : 3;
 				const team = j === 0 ? 'cho' : 'han';
 				const name = team === 'cho' ? '卒' : '兵';
-				this.data.mapData[y][x] = {
+				this.map[y][x] = {
 					data: this.data,
 					team,
 					y,
@@ -171,7 +163,7 @@ export default class GameData {
 				const y = j === 0 ? 8 : 1;
 				const team = j === 0 ? 'cho' : 'han';
 				const name = team === 'cho' ? '楚' : '漢';
-				this.data.mapData[y][x] = {
+				this.map[y][x] = {
 					data: this.data,
 					team,
 					y,
@@ -190,7 +182,7 @@ export default class GameData {
 			for (let j = 0; j < 2; j++) {
 				const y = j === 0 ? 7 : 2;
 				const team = j === 0 ? 'cho' : 'han';
-				this.data.mapData[y][x] = {
+				this.map[y][x] = {
 					data: this.data,
 					team,
 					y,
@@ -201,27 +193,5 @@ export default class GameData {
 				};
 			}
 		}
-	}
-
-	reset() {
-		this.data = {
-			mapData: Array.from(Array(10), () => {
-				return Array(9).fill(0);
-			}),
-			han: {
-				data: [],
-				score: 73.5,
-				jang: false,
-			},
-			cho: {
-				data: [],
-				score: 72,
-				jang: false,
-			},
-			turn: 'cho',
-		};
-		this.count = 0;
-
-		this.setData();
 	}
 }
