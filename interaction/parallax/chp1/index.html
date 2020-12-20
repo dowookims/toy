@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="a1" class="s">
+            <img src="./bg.jpg">
+            <h1 id="h1">하이 데얼</h1>
+        </div>
+        <div id="a2" class="s">
+            <img src="./bg1.jpg">
+            <h1 id="h2">나이쓰 투 미트유</h1>
+        </div>
+        <div id="a3" class="s">
+            <img src="./bg2.jpeg">
+            <h1 id="h3">카카오톡</h1>
+        </div>
+        <div id="a4" class="s">
+            <img src="./bg3.jpg">
+            <h1 id="h4">구글 크롬 사파리</h1>
+        </div>
+    </div>
+    <script>
+        let i = 0;
+        console.time('s');
+        const fn = () => {
+            console.log('raF', ++i);
+            let id = window.requestAnimationFrame(fn);
+            if (i===60) {
+                window.cancelAnimationFrame(id);
+                console.timeEnd('s');
+            }
+        }
+        window.requestAnimationFrame(fn);
+        let i2 = 0;
+        
+        let height = window.innerHeight;
+        window.addEventListener('resize', () => {
+            height = window.innerHeight;
+        })
+        window.addEventListener('scroll', () => {
+            let page = window.scrollY / height;
+            if (page > 2.5) {
+                h4.style.transform = `translateX(${window.scrollY * 0.32}px)`;
+            } else if  (page > 1.5) {
+                h3.style.transform = `translateY(${window.scrollY * 0.32}px)`;
+            } else if (page > 0.5) {
+                h2.style.transform = `translateY(${window.scrollY * 0.32}px)`;
+            }else {
+                h1.style.transform = `translateY(${window.scrollY * 0.4}px)`;
+            }
+        })
+    </script>
+</body>
+</html>

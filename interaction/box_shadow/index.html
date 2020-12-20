@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            perspective: 1000px;
+        }
+        .box {
+            width: 300px;
+            height: 200px;
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+        #app {
+            margin: 200px 0 0 200px;
+            background: red;
+            box-shadow: 
+                10px 10px 5px green,
+                15px 15px 5px yellow;
+        }
+
+        #app2 {
+            margin: 200px 0 0 600px;
+            background: pink;
+            box-shadow:
+                0 0 10px green,
+                0 0 20px yellow,
+                0 0 30px orange;
+            transform: rotateX(0deg) rotateY(0deg) rotateZ(65deg) translateY(-10px) translateZ(1000px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="box"></div>
+    <div id="app2" class="box">Do your best</div>
+</body>
+</html>
