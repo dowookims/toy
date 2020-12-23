@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        #app {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .box {
+            position: absolute;
+            left: 200px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            animation: rotate 1.5s linear infinite;
+        }
+
+        .box2 {
+            position: absolute;
+            left: 200px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            animation: rotate2 1.5s linear infinite;
+        }
+
+        .spinner {
+            border: 10px solid #ccc;
+            border-right-color: #673ab7;
+        }
+
+        .spinner2 {
+            top: 200px;
+            border: 10px solid #673ab7;
+            border-color: #673ab7 transparent #673ab7 transparent;
+        }
+        .spinner3 {
+            top: 400px;
+            border: 10px solid #679ab7;
+            border-color: #679ab7 transparent transparent transparent;
+        }
+
+        .spinner4 {
+            top: 600px;
+            border: 10px solid #679ab7;
+            border-color: #679ab7 transparent transparent transparent;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes rotate2 {
+            0% {
+                trasform: rotate(0deg);
+                border-color: #679ab7 transparent transparent transparent;
+            }
+            33% {
+                trasform: rotate(120deg);
+                border-color: yellow transparent transparent transparent;
+            }
+            66% {
+                transform: rotate(240deg);
+                border-color: blue transparent transparent transparent;
+            }
+            100% {
+                transform: rotate(360deg);
+                border-color: green transparent transparent transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="box spinner"></div>
+        <div class="box spinner2"></div>
+        <div class="box spinner3"></div>
+        <div class="box2 spinner4"></div>
+    </div>
+</body>
+</html>

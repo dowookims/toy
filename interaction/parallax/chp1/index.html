@@ -42,7 +42,8 @@
         let height = window.innerHeight;
         window.addEventListener('resize', () => {
             height = window.innerHeight;
-        })
+        });
+        
         window.addEventListener('scroll', () => {
             let page = window.scrollY / height;
             if (page > 2.5) {
