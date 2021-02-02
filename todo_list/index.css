@@ -1,0 +1,101 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#app {
+    width: 100vw;
+    min-height: 100vh;
+}
+
+.todo-header {
+    width: 100%;
+    height: 48px;
+    background-color: #333;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.todo-input-page {
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-username-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.todo-input-page label {
+    transition: transform 0.3s ease;
+    transform: translate(10px, 30px);
+    color: #333;
+}
+
+.todo-input-page label.name-input-clicked {
+    transform: translate(10px, -30px);
+    color: #fff;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.input-name {
+    width: 50vw;
+    font-size: 2em;
+    padding: 20px;
+    border: none;
+    box-shadow: 2px 5px 5px 3px #fff, 2px -5px 5px 3px #fff, -2px 5px 5px 3px #fff, -2px -5px 5px 3px #fff;
+}
+
+.input-name:focus {
+    outline: none;
+}
+
+.input-name::placeholder {
+    color: #fff;
+}
+
+.end-user-input {
+    margin-top: 20px;
+}
+
+@media screen and (max-width: 1200px) and (orientation: portrait) {
+
+}
+
+@media screen and (max-width: 992px) and (orientation: portrait) {
+
+}
+
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    .input-username-form {
+        width: 100%;
+    }
+    .input-name {
+        width: 90%;
+    }
+}
+
+@media screen and (max-width:576px) and (orientation: portrait) {
+    .input-username-form {
+        width: 100%;
+    }
+
+    .input-name {
+        width: 90%;
+    }
+}
